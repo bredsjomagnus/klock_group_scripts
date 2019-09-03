@@ -1,4 +1,7 @@
 ./__pycache__
 ./Exempelkod
+./year_7_files
+./year_8_files
+./year_9_files
 *.csv
 

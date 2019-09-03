@@ -1,7 +1,8 @@
-# arskurser = ['7', '8', '9']
-arskurser = ['7']
+# Används av klock_grupper.py för att plocka ut grupperna och eleverna i dessa grupper
 
-mailtail = '@edu.hellefors.se'
+arskurser = ['7', '8', '9']
+
+email_tail = '@edu.hellefors.se'
 
 grupper = {
     'no': ['ABCNO-1', 'ABCNO-2', 'ABCNO-3', 'ABCNO-4'],
