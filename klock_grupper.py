@@ -1,10 +1,95 @@
 import pandas as pd
 from config import *
+import datetime
 import os
+import sys
+import getopt
+
+HELPMSG = """
+klock_grupper reads csv downloaded from Infomentor with students name and
+groups. Then create one csv-file for every group that can be used to
+create these groups in Google Admin Groups.
+
+To make this work there needs to be a reference csv with the students
+names and email addresses [elevnamn_till_elevmail.csv]
+
+USAGE
+$ python klock_grupper.py <csv-file>
+The csv-file needs to have semicolon as separator. But creates csv-files with comma as separator.
+
+csv-file head example from Infomentor:
+Elev Grupper;Elev Namn;Elev Klass;Årskurs
+9ABCNO-2, 9CBL-1, 9CEN, 9CHKK-1, 9CIDH, 9CMU-1, 9CSL-1, 9CSO;last name, first name;9C;9
+...
+
+Then creates files like this:
+Group Email [Required],Member Email,Member Type,Member Role
+9cbl-1@edu.hellefors.se,firstname.lastname@edu.hellefors.se,USER,MEMBER
+...
+
+Options:
+    -h or --help        Display this help message
+"""
 
 dirname = os.path.dirname(__file__)         # this directory
+empty_groups = []
+options = ['-h', '--help']
 
-df = pd.read_csv('grupper_alla.csv', sep=';', index_col=None)       # read list from Infomentor
+def createfile(new_df, group_file_name, group_name, message):
+    print()
+    print(message)
+    new_df.to_csv(group_file_name, sep=",", index=False)    # csv from dataframe
+
+def log_difference(new_df, old_df, group_name):
+    log = "CHANGES MADE\n\n"
+    time_stamp = str(datetime.datetime.now())[:10] # 2019-09-04
+
+    # REMOVED
+    removed_df = old_df.merge(new_df,indicator = True, how='left').loc[lambda x : x['_merge']!='both']
+    if len(removed_df.index) > 0:
+        log += "Removed:\n" + removed_df.to_string() + "\n\n"
+
+    # ADDED
+    added_df = new_df.merge(old_df,indicator = True, how='left').loc[lambda x : x['_merge']!='both']
+    if len(added_df.index) > 0:
+        log += "Added:\n" + added_df.to_string()
+
+    # CREATE LOG
+    filepath = os.path.join(os.path.dirname(__file__), "changelogs/"+time_stamp+" "+group_name+" LOG.txt")
+    log_file = open(filepath, "w")
+    log_file.write(log)
+    log_file.close()
+
+    return group_name+".csv changed! LOG FILE CREATED -> '" + filepath + "'"
+
+opts, args = getopt.getopt(sys.argv[1:], "h", ["help"])
+
+# iterate options
+for opt in opts:
+    for optvalue in opt:
+        # check if option is in valid option list
+        if optvalue in options:
+            if optvalue == '-h' or optvalue == '--help':
+                print(HELPMSG)
+                input("Press enter...")
+                exit()
+        
+
+if len(args) == 0:
+    print("Correct use: $ python klock_grupper.py <csv-file>")
+    print("Need CSV-file")
+    print()
+    print("Type python --help klock_grupper.py, for help")
+    print()
+    print("Closing...")
+    exit()
+else:
+    csvfile = args[0]
+
+
+
+df = pd.read_csv(csvfile, sep=';', index_col=None).dropna()       # read list from Infomentor
+
 elevmail = pd.read_csv('elevnamn_till_elevmail.csv')                # read reference list with names and corresponding emails
 counter = 0     # Counter for number of group.csv files created
 for year in arskurser:          # year: 7,...
@@ -13,6 +98,8 @@ for year in arskurser:          # year: 7,...
         for group in grupper[key]:            # group: abcno-1, abcno-2, abcno-3,...
             group_name = year + group                       # the correct group name
             group_email = group_name.lower() + email_tail    # the groups email address
+
+            group_file_name = os.path.join(dirname, folder + group_name+".csv")
             
             group_name_df = df[df['Elev Grupper'].str.contains(group_name)]                 # Ny dataframe med alla elever som är med i gruppen (groupname)
             merged_df = pd.merge(elevmail, group_name_df, on=['Elev Namn'], how='inner')    # lägger samman dataframsen med avseende på elevnamnet
@@ -32,9 +119,32 @@ for year in arskurser:          # year: 7,...
                 'Member Role': member_role_column
             }
 
-            final_df = pd.DataFrame.from_dict(group_dict)               # dataframe from created dict: group_dict
+            new_df = pd.DataFrame.from_dict(group_dict)               # dataframe from created dict: group_dict
 
-            final_df.to_csv(os.path.join(dirname, folder + group_name+".csv"), sep=",", index=False)    # csv from dataframe
-            counter += 1
+            if len(new_df.index) > 0:   # if new_df contains rows
+                if os.path.exists(group_file_name): # check if this csv already exists
+                    old_df = pd.read_csv(group_file_name)   # get old_df
 
+                    
+                    if not new_df.equals(old_df):   # compare if new_df is equal to new
+
+                        message = log_difference(new_df, old_df, group_name)
+                        createfile(new_df, group_file_name, group_name, message)
+                        counter += 1
+                    else:
+                        print(".", end="")
+
+                else:
+                    message = group_name+".csv created!"
+                    createfile(new_df, group_file_name, group_name, message)
+                    counter += 1
+            else:
+                empty_groups.append(group_name)
+                
+
+            
+print()
+print()
+print("Empty group(s):", empty_groups, ". Skipped!")
+print()
 print("DONE! %d files created!" % (counter))
