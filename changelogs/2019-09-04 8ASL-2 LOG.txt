@@ -1,0 +1,16 @@
+CHANGES MADE
+
+Added:
+     Group Email [Required]                                Member Email Member Type Member Role     _merge
+0   8asl-2@edu.hellefors.se        suhaib.ibrahim.daud@edu.hellefors.se        USER      MEMBER  left_only
+1   8asl-2@edu.hellefors.se              caisa.duranek@edu.hellefors.se        USER      MEMBER  left_only
+2   8asl-2@edu.hellefors.se           abolfazl.heydari@edu.hellefors.se        USER      MEMBER  left_only
+3   8asl-2@edu.hellefors.se              yousef.hijazi@edu.hellefors.se        USER      MEMBER  left_only
+4   8asl-2@edu.hellefors.se              kamal.hussein@edu.hellefors.se        USER      MEMBER  left_only
+5   8asl-2@edu.hellefors.se             birk.mellkvist@edu.hellefors.se        USER      MEMBER  left_only
+6   8asl-2@edu.hellefors.se                  faisa.nur@edu.hellefors.se        USER      MEMBER  left_only
+7   8asl-2@edu.hellefors.se        ester.olofsson.nord@edu.hellefors.se        USER      MEMBER  left_only
+8   8asl-2@edu.hellefors.se              tania.sadeghi@edu.hellefors.se        USER      MEMBER  left_only
+9   8asl-2@edu.hellefors.se            david.sandstrom@edu.hellefors.se        USER      MEMBER  left_only
+10  8asl-2@edu.hellefors.se               tilda.skaret@edu.hellefors.se        USER      MEMBER  left_only
+11  8asl-2@edu.hellefors.se  melwin.wickholm.tornkvist@edu.hellefors.se        USER      MEMBER  left_only

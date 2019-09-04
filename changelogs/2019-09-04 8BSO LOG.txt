@@ -1,0 +1,24 @@
+CHANGES MADE
+
+Added:
+   Group Email [Required]                                Member Email Member Type Member Role     _merge
+0   8bso@edu.hellefors.se           jesper.andersson@edu.hellefors.se        USER      MEMBER  left_only
+1   8bso@edu.hellefors.se                amina.gumar@edu.hellefors.se        USER      MEMBER  left_only
+2   8bso@edu.hellefors.se            love.gustafsson@edu.hellefors.se        USER      MEMBER  left_only
+3   8bso@edu.hellefors.se             moa.gustafsson@edu.hellefors.se        USER      MEMBER  left_only
+4   8bso@edu.hellefors.se               elza.hedberg@edu.hellefors.se        USER      MEMBER  left_only
+5   8bso@edu.hellefors.se                  liam.holm@edu.hellefors.se        USER      MEMBER  left_only
+6   8bso@edu.hellefors.se     jama.ibrahim.abdiraham@edu.hellefors.se        USER      MEMBER  left_only
+7   8bso@edu.hellefors.se       majid.issa.alhussein@edu.hellefors.se        USER      MEMBER  left_only
+8   8bso@edu.hellefors.se               thea.liodden@edu.hellefors.se        USER      MEMBER  left_only
+9   8bso@edu.hellefors.se           alfons.nordqvist@edu.hellefors.se        USER      MEMBER  left_only
+10  8bso@edu.hellefors.se         emil.palm.svensson@edu.hellefors.se        USER      MEMBER  left_only
+11  8bso@edu.hellefors.se            tindra.pohlmann@edu.hellefors.se        USER      MEMBER  left_only
+12  8bso@edu.hellefors.se        laura.reves.jansson@edu.hellefors.se        USER      MEMBER  left_only
+13  8bso@edu.hellefors.se                 arwa.saeed@edu.hellefors.se        USER      MEMBER  left_only
+14  8bso@edu.hellefors.se        bilalutdin.salakhov@edu.hellefors.se        USER      MEMBER  left_only
+15  8bso@edu.hellefors.se               mehma.saulat@edu.hellefors.se        USER      MEMBER  left_only
+16  8bso@edu.hellefors.se               meral.saulat@edu.hellefors.se        USER      MEMBER  left_only
+17  8bso@edu.hellefors.se                felix.saxin@edu.hellefors.se        USER      MEMBER  left_only
+18  8bso@edu.hellefors.se  oliver.sodergard.elovaara@edu.hellefors.se        USER      MEMBER  left_only
+19  8bso@edu.hellefors.se             mathilda.wiker@edu.hellefors.se        USER      MEMBER  left_only

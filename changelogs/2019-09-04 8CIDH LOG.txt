@@ -1,0 +1,27 @@
+CHANGES MADE
+
+Added:
+    Group Email [Required]                          Member Email Member Type Member Role     _merge
+0   8cidh@edu.hellefors.se            iman.abdi@edu.hellefors.se        USER      MEMBER  left_only
+1   8cidh@edu.hellefors.se   abdulhamid.ayoubi@edu.hellefors.se         USER      MEMBER  left_only
+2   8cidh@edu.hellefors.se    felicia.eriksson@edu.hellefors.se         USER      MEMBER  left_only
+3   8cidh@edu.hellefors.se       hilda.eriksson@edu.hellefors.se        USER      MEMBER  left_only
+4   8cidh@edu.hellefors.se     albin.gustafsson@edu.hellefors.se        USER      MEMBER  left_only
+5   8cidh@edu.hellefors.se    alfred.gustafsson@edu.hellefors.se        USER      MEMBER  left_only
+6   8cidh@edu.hellefors.se  abdalah.hamid.hasan@edu.hellefors.se        USER      MEMBER  left_only
+7   8cidh@edu.hellefors.se         layth.harith@edu.hellefors.se        USER      MEMBER  left_only
+8   8cidh@edu.hellefors.se        tuva.isaksson@edu.hellefors.se        USER      MEMBER  left_only
+9   8cidh@edu.hellefors.se         alma.jansson@edu.hellefors.se        USER      MEMBER  left_only
+10  8cidh@edu.hellefors.se        hadi.khoulani@edu.hellefors.se        USER      MEMBER  left_only
+11  8cidh@edu.hellefors.se       kazper.lofgren@edu.hellefors.se        USER      MEMBER  left_only
+12  8cidh@edu.hellefors.se         tara.mattson@edu.hellefors.se        USER      MEMBER  left_only
+13  8cidh@edu.hellefors.se  mehasin.saleh.naser@edu.hellefors.se        USER      MEMBER  left_only
+14  8cidh@edu.hellefors.se          aklilu.nebi@edu.hellefors.se        USER      MEMBER  left_only
+15  8cidh@edu.hellefors.se      joel.pettersson@edu.hellefors.se        USER      MEMBER  left_only
+16  8cidh@edu.hellefors.se    ayaan.qahir.cabdu@edu.hellefors.se        USER      MEMBER  left_only
+17  8cidh@edu.hellefors.se         piotr.samsel@edu.hellefors.se        USER      MEMBER  left_only
+18  8cidh@edu.hellefors.se       malin.sandberg@edu.hellefors.se        USER      MEMBER  left_only
+19  8cidh@edu.hellefors.se       munteser.siraj@edu.hellefors.se        USER      MEMBER  left_only
+20  8cidh@edu.hellefors.se   alma.skaret.sander@edu.hellefors.se        USER      MEMBER  left_only
+21  8cidh@edu.hellefors.se    sally.wetterskoog@edu.hellefors.se        USER      MEMBER  left_only
+22  8cidh@edu.hellefors.se          alice.wolke@edu.hellefors.se        USER      MEMBER  left_only

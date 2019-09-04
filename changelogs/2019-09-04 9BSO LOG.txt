@@ -1,0 +1,24 @@
+CHANGES MADE
+
+Added:
+   Group Email [Required]                                 Member Email Member Type Member Role     _merge
+0   9bso@edu.hellefors.se           mohamad.alkhafaji@edu.hellefors.se        USER      MEMBER  left_only
+1   9bso@edu.hellefors.se            ludvig.andersson@edu.hellefors.se        USER      MEMBER  left_only
+2   9bso@edu.hellefors.se             frida.granstrom@edu.hellefors.se        USER      MEMBER  left_only
+3   9bso@edu.hellefors.se        melat.selamawi.haile@edu.hellefors.se        USER      MEMBER  left_only
+4   9bso@edu.hellefors.se               lydia.hedelin@edu.hellefors.se        USER      MEMBER  left_only
+5   9bso@edu.hellefors.se          matilda.henriksson@edu.hellefors.se        USER      MEMBER  left_only
+6   9bso@edu.hellefors.se             elias.johansson@edu.hellefors.se        USER      MEMBER  left_only
+7   9bso@edu.hellefors.se              elin.kjellberg@edu.hellefors.se        USER      MEMBER  left_only
+8   9bso@edu.hellefors.se             gabriel.nilsson@edu.hellefors.se        USER      MEMBER  left_only
+9   9bso@edu.hellefors.se               elsa.nordling@edu.hellefors.se        USER      MEMBER  left_only
+10  9bso@edu.hellefors.se          elsa.olofsson.nord@edu.hellefors.se        USER      MEMBER  left_only
+11  9bso@edu.hellefors.se               viktor.olsson@edu.hellefors.se        USER      MEMBER  left_only
+12  9bso@edu.hellefors.se                 vyr.poppius@edu.hellefors.se        USER      MEMBER  left_only
+13  9bso@edu.hellefors.se                 kalle.quist@edu.hellefors.se        USER      MEMBER  left_only
+14  9bso@edu.hellefors.se               theo.ranstrom@edu.hellefors.se        USER      MEMBER  left_only
+15  9bso@edu.hellefors.se               robyn.ringmyr@edu.hellefors.se        USER      MEMBER  left_only
+16  9bso@edu.hellefors.se  celina.sinkkonen.sodergard@edu.hellefors.se        USER      MEMBER  left_only
+17  9bso@edu.hellefors.se              jonathan.stahl@edu.hellefors.se        USER      MEMBER  left_only
+18  9bso@edu.hellefors.se               joakim.valden@edu.hellefors.se        USER      MEMBER  left_only
+19  9bso@edu.hellefors.se                   joep.wood@edu.hellefors.se        USER      MEMBER  left_only

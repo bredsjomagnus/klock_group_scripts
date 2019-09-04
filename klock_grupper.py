@@ -35,12 +35,23 @@ dirname = os.path.dirname(__file__)         # this directory
 empty_groups = []
 options = ['-h', '--help']
 
+print("Beginning process...")
+print()
+
+
 def createfile(new_df, group_file_name, group_name, message):
+    """
+    Saves the new dataframe to csv-file in corresponding folder
+    ex year_7_files/7ABCNO-1.csv
+    """
     print()
     print(message)
     new_df.to_csv(group_file_name, sep=",", index=False)    # csv from dataframe
 
 def log_difference(new_df, old_df, group_name):
+    """
+    Creates at logfile in changelogs/ for those csv-files that is updated during the process.
+    """
     log = "CHANGES MADE\n\n"
     time_stamp = str(datetime.datetime.now())[:10] # 2019-09-04
 
@@ -62,7 +73,7 @@ def log_difference(new_df, old_df, group_name):
 
     return group_name+".csv changed! LOG FILE CREATED -> '" + filepath + "'"
 
-opts, args = getopt.getopt(sys.argv[1:], "h", ["help"])
+opts, args = getopt.getopt(sys.argv[1:], "h", ["help"])     # get options and arguments from console
 
 # iterate options
 for opt in opts:
@@ -71,29 +82,46 @@ for opt in opts:
         if optvalue in options:
             if optvalue == '-h' or optvalue == '--help':
                 print(HELPMSG)
-                input("Press enter...")
                 exit()
-        
 
+print("## Looking for the essential files ##")
+
+# csv file needed as argument
 if len(args) == 0:
     print("Correct use: $ python klock_grupper.py <csv-file>")
     print("Need CSV-file")
     print()
     print("Type python --help klock_grupper.py, for help")
     print()
-    print("Closing...")
+    print("FAILURE! Closing process...")
     exit()
 else:
     csvfile = args[0]
 
 
+try:
+    df = pd.read_csv(csvfile, sep=';', index_col=None).dropna()       # read list from Infomentor
+    print("Found - '" + csvfile + "'")
+except:
+    print("Failed! Could not find file - '" + csvfile + "'")
+    print()
+    print("FAILURE! Closing process...")
+    exit()
 
-df = pd.read_csv(csvfile, sep=';', index_col=None).dropna()       # read list from Infomentor
-
-elevmail = pd.read_csv('elevnamn_till_elevmail.csv')                # read reference list with names and corresponding emails
+try:
+    elevmail = pd.read_csv('elevnamn_till_elevmail.csv')                # read reference list with names and corresponding emails
+    print("Found - 'elevnamn_till_elevmail.csv'")
+except:
+    print("Failed! Could not find - 'elevnamn_till_elevmail.csv'")
+    print("'elevnamn_till_elevmail.csv' is needed to get students email addresses.")
+    print()
+    print("FAILURE! Closing process...")
+    exit()
 counter = 0     # Counter for number of group.csv files created
 for year in arskurser:          # year: 7,...
     folder = 'year_'+year+'_files/' # the folder to save the .csv in
+    print()
+    print("folder: " + folder)
     for key in grupper:                 # key: no,...
         for group in grupper[key]:            # group: abcno-1, abcno-2, abcno-3,...
             group_name = year + group                       # the correct group name
@@ -127,7 +155,6 @@ for year in arskurser:          # year: 7,...
 
                     
                     if not new_df.equals(old_df):   # compare if new_df is equal to new
-
                         message = log_difference(new_df, old_df, group_name)
                         createfile(new_df, group_file_name, group_name, message)
                         counter += 1

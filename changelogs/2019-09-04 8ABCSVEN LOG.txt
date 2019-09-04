@@ -1,0 +1,10 @@
+CHANGES MADE
+
+Added:
+      Group Email [Required]                                 Member Email Member Type Member Role     _merge
+0  8abcsven@edu.hellefors.se               caisa.duranek@edu.hellefors.se        USER      MEMBER  left_only
+1  8abcsven@edu.hellefors.se        hugo.gustavsson.holm@edu.hellefors.se        USER      MEMBER  left_only
+2  8abcsven@edu.hellefors.se               yousef.hijazi@edu.hellefors.se        USER      MEMBER  left_only
+3  8abcsven@edu.hellefors.se  davina.sinkkonen.sodergard@edu.hellefors.se        USER      MEMBER  left_only
+4  8abcsven@edu.hellefors.se                meral.saulat@edu.hellefors.se        USER      MEMBER  left_only
+5  8abcsven@edu.hellefors.se              hilda.eriksson@edu.hellefors.se        USER      MEMBER  left_only

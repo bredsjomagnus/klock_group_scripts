@@ -1,0 +1,15 @@
+CHANGES MADE
+
+Added:
+      Group Email [Required]                       Member Email Member Type Member Role     _merge
+0   9ahkk-2@edu.hellefors.se    axel.bergkvist@edu.hellefors.se        USER      MEMBER  left_only
+1   9ahkk-2@edu.hellefors.se        elie.chabo@edu.hellefors.se        USER      MEMBER  left_only
+2   9ahkk-2@edu.hellefors.se    ida.hermansson@edu.hellefors.se        USER      MEMBER  left_only
+3   9ahkk-2@edu.hellefors.se     maya.hultgren@edu.hellefors.se        USER      MEMBER  left_only
+4   9ahkk-2@edu.hellefors.se      saga.immonen@edu.hellefors.se        USER      MEMBER  left_only
+5   9ahkk-2@edu.hellefors.se   tilda.johansson@edu.hellefors.se        USER      MEMBER  left_only
+6   9ahkk-2@edu.hellefors.se    william.khzouz@edu.hellefors.se        USER      MEMBER  left_only
+7   9ahkk-2@edu.hellefors.se  markus.qvarforth@edu.hellefors.se        USER      MEMBER  left_only
+8   9ahkk-2@edu.hellefors.se   shervin.sadeghi@edu.hellefors.se        USER      MEMBER  left_only
+9   9ahkk-2@edu.hellefors.se      tuva.solvang@edu.hellefors.se        USER      MEMBER  left_only
+10  9ahkk-2@edu.hellefors.se     lydia.ahnberg@edu.hellefors.se        USER      MEMBER  left_only

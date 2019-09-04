@@ -1,0 +1,14 @@
+CHANGES MADE
+
+Added:
+    Group Email [Required]                                Member Email Member Type Member Role     _merge
+0  8bmu-2@edu.hellefors.se           jesper.andersson@edu.hellefors.se        USER      MEMBER  left_only
+1  8bmu-2@edu.hellefors.se               elza.hedberg@edu.hellefors.se        USER      MEMBER  left_only
+2  8bmu-2@edu.hellefors.se     jama.ibrahim.abdiraham@edu.hellefors.se        USER      MEMBER  left_only
+3  8bmu-2@edu.hellefors.se         emil.palm.svensson@edu.hellefors.se        USER      MEMBER  left_only
+4  8bmu-2@edu.hellefors.se        laura.reves.jansson@edu.hellefors.se        USER      MEMBER  left_only
+5  8bmu-2@edu.hellefors.se        bilalutdin.salakhov@edu.hellefors.se        USER      MEMBER  left_only
+6  8bmu-2@edu.hellefors.se               mehma.saulat@edu.hellefors.se        USER      MEMBER  left_only
+7  8bmu-2@edu.hellefors.se                felix.saxin@edu.hellefors.se        USER      MEMBER  left_only
+8  8bmu-2@edu.hellefors.se  oliver.sodergard.elovaara@edu.hellefors.se        USER      MEMBER  left_only
+9  8bmu-2@edu.hellefors.se             mathilda.wiker@edu.hellefors.se        USER      MEMBER  left_only

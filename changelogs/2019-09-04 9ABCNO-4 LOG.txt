@@ -1,0 +1,19 @@
+CHANGES MADE
+
+Added:
+       Group Email [Required]                           Member Email Member Type Member Role     _merge
+0   9abcno-4@edu.hellefors.se          nigina.aimal@edu.hellefors.se        USER      MEMBER  left_only
+1   9abcno-4@edu.hellefors.se  benjamin.amin.shokry@edu.hellefors.se        USER      MEMBER  left_only
+2   9abcno-4@edu.hellefors.se        ida.hermansson@edu.hellefors.se        USER      MEMBER  left_only
+3   9abcno-4@edu.hellefors.se         lydia.ahnberg@edu.hellefors.se        USER      MEMBER  left_only
+4   9abcno-4@edu.hellefors.se            sara.ahmed@edu.hellefors.se        USER      MEMBER  left_only
+5   9abcno-4@edu.hellefors.se      ludvig.andersson@edu.hellefors.se        USER      MEMBER  left_only
+6   9abcno-4@edu.hellefors.se       elias.johansson@edu.hellefors.se        USER      MEMBER  left_only
+7   9abcno-4@edu.hellefors.se           vyr.poppius@edu.hellefors.se        USER      MEMBER  left_only
+8   9abcno-4@edu.hellefors.se           kalle.quist@edu.hellefors.se        USER      MEMBER  left_only
+9   9abcno-4@edu.hellefors.se        jonathan.stahl@edu.hellefors.se        USER      MEMBER  left_only
+10  9abcno-4@edu.hellefors.se          max.berglund@edu.hellefors.se        USER      MEMBER  left_only
+11  9abcno-4@edu.hellefors.se             alva.holm@edu.hellefors.se        USER      MEMBER  left_only
+12  9abcno-4@edu.hellefors.se     felicia.johansson@edu.hellefors.se        USER      MEMBER  left_only
+13  9abcno-4@edu.hellefors.se      elias.niittymaki@edu.hellefors.se        USER      MEMBER  left_only
+14  9abcno-4@edu.hellefors.se   saga.toverud.agrell@edu.hellefors.se        USER      MEMBER  left_only

@@ -1,0 +1,16 @@
+CHANGES MADE
+
+Added:
+     Group Email [Required]                         Member Email Member Type Member Role     _merge
+0   9bsl-2@edu.hellefors.se          sara.ahmed@edu.hellefors.se        USER      MEMBER  left_only
+1   9bsl-2@edu.hellefors.se   mohamad.alkhafaji@edu.hellefors.se        USER      MEMBER  left_only
+2   9bsl-2@edu.hellefors.se    ludvig.andersson@edu.hellefors.se        USER      MEMBER  left_only
+3   9bsl-2@edu.hellefors.se     frida.granstrom@edu.hellefors.se        USER      MEMBER  left_only
+4   9bsl-2@edu.hellefors.se       lydia.hedelin@edu.hellefors.se        USER      MEMBER  left_only
+5   9bsl-2@edu.hellefors.se      elin.kjellberg@edu.hellefors.se        USER      MEMBER  left_only
+6   9bsl-2@edu.hellefors.se     gabriel.nilsson@edu.hellefors.se        USER      MEMBER  left_only
+7   9bsl-2@edu.hellefors.se  elsa.olofsson.nord@edu.hellefors.se        USER      MEMBER  left_only
+8   9bsl-2@edu.hellefors.se       viktor.olsson@edu.hellefors.se        USER      MEMBER  left_only
+9   9bsl-2@edu.hellefors.se         vyr.poppius@edu.hellefors.se        USER      MEMBER  left_only
+10  9bsl-2@edu.hellefors.se       joakim.valden@edu.hellefors.se        USER      MEMBER  left_only
+11  9bsl-2@edu.hellefors.se           joep.wood@edu.hellefors.se        USER      MEMBER  left_only
