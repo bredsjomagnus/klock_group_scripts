@@ -100,7 +100,7 @@ else:
 
 
 try:
-    df = pd.read_csv(csvfile, sep=';', index_col=None).dropna()       # read list from Infomentor
+    df = pd.read_csv(csvfile, sep=';', index_col=None).dropna() # read list from Infomentor
     print("Found - '" + csvfile + "'")
 except:
     print("Failed! Could not find file - '" + csvfile + "'")
@@ -109,7 +109,7 @@ except:
     exit()
 
 try:
-    elevmail = pd.read_csv('elevnamn_till_elevmail.csv')                # read reference list with names and corresponding emails
+    elevmail = pd.read_csv('elevnamn_till_elevmail.csv').dropna() # read reference list with names and corresponding emails
     print("Found - 'elevnamn_till_elevmail.csv'")
 except:
     print("Failed! Could not find - 'elevnamn_till_elevmail.csv'")
