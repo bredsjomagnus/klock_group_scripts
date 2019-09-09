@@ -25,6 +25,6 @@ Repeat
 Until event = #PB_Event_CloseWindow
 
 ; IDE Options = PureBasic 5.71 LTS (Windows - x64)
-; CursorPosition = 13
+; CursorPosition = 16
 ; EnableXP
-; Executable = analysplotter.exe
+; Executable = Grupp.exe
