@@ -5,4 +5,7 @@ year_8_files/*
 year_9_files/*
 changelogs/*
 *.csv
-
+*.json
+token.pickle
+*.exe
+env.py
