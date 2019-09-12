@@ -14,7 +14,7 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 SAMPLE_SPREADSHEET_ID = SHEET_ID
 SAMPLE_RANGE_NAME = 'elevlista!B1:C'
 
-FILENAME = 'elevnamn_till_elevmail.csv'
+FILENAME = 'elevnamn_till_elevmail_TEST.csv'
 
 def main():
     """Shows basic usage of the Sheets API.

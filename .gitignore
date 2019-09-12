@@ -6,6 +6,6 @@ year_9_files/*
 changelogs/*
 *.csv
 *.json
-token.pickle
+*.pickle
 *.exe
 env.py
