@@ -16,6 +16,9 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 # SAMPLE_SPREADSHEET_ID = SHEET_TO_UPDATE_ID
 # SAMPLE_RANGE_NAME = 'Blad1!A1:B'
 
+spreadsheet = {}
+SPREADSHEET_ID = ""
+
 # FILENAME = 'elevnamn_till_elevmail_TEST.csv'
 
 def main():
@@ -45,13 +48,19 @@ def main():
     
     # CREATE SPREADSHEET
     spreadsheet_body = {
-
+        "properties": {
+            "title": "API genererat dokument"
+        }
     }
-    request = service.spreadsheets().create(body=spreadsheet_body)
-    response = request
-    pp.pprint(response)
+    try:
+        request = service.spreadsheets().create(body=spreadsheet_body)
+        spreadsheet = request.execute()
+        SPREADSHEET_ID = spreadsheet['spreadsheetId']
+        print("spreadsheet id: ", SPREADSHEET_ID)
+    except Exception as e:
+        print("While trying to create new spreadsheet error: ", e)
 
-    
+
     requests = []
     # Change the spreadsheet's title.
     requests.append({
@@ -119,7 +128,7 @@ def main():
     # Trying to get the properties of the spreadsheet
     try:
         fields="sheets.properties"
-        request = service.spreadsheets().get(spreadsheetId=SAMPLE_SPREADSHEET_ID, fields=fields)
+        request = service.spreadsheets().get(spreadsheetId=SPREADSHEET_ID, fields=fields)
         response = request.execute()
 
         # TODO: Change code below to process the `response` dict:
@@ -137,7 +146,7 @@ def main():
         body = {
             'requests': requests
         }
-        response = service.spreadsheets().batchUpdate(spreadsheetId=SAMPLE_SPREADSHEET_ID, body=body).execute()
+        response = service.spreadsheets().batchUpdate(spreadsheetId=SPREADSHEET_ID, body=body).execute()
         
         print("batchUpdated:")
         pp.pprint(body['requests'])
@@ -157,7 +166,7 @@ def main():
             "values": values
         }
         # use append to add rows and update to overwrite
-        response = service.spreadsheets().values().update(spreadsheetId=SAMPLE_SPREADSHEET_ID, range=range, body=resource, valueInputOption="USER_ENTERED").execute()
+        response = service.spreadsheets().values().update(spreadsheetId=SPREADSHEET_ID, range=range, body=resource, valueInputOption="USER_ENTERED").execute()
         print("appended value reponse: ", response)
     except Exception as e:
         print("While trying to append values error: ", e)
