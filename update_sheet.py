@@ -1,18 +1,20 @@
 from __future__ import print_function
 import pickle
 import os.path
+import pprint
 from env import *
 import pandas as pd
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 
+pp = pprint.PrettyPrinter(indent=2)
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
 # The ID and range of a sample spreadsheet.
-SAMPLE_SPREADSHEET_ID = SHEET_TO_UPDATE_ID
-SAMPLE_RANGE_NAME = 'Blad1!A1:BS'
+# SAMPLE_SPREADSHEET_ID = SHEET_TO_UPDATE_ID
+# SAMPLE_RANGE_NAME = 'Blad1!A1:B'
 
 # FILENAME = 'elevnamn_till_elevmail_TEST.csv'
 
@@ -40,48 +42,125 @@ def main():
             pickle.dump(creds, token)
 
     service = build('sheets', 'v4', credentials=creds)
+    
+    # CREATE SPREADSHEET
+    spreadsheet_body = {
 
-    # Call the Sheets API
-    sheet = service.spreadsheets()
-    result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID,
-                                range=SAMPLE_RANGE_NAME).execute()
-    values = result.get('values', [])
+    }
+    request = service.spreadsheets().create(body=spreadsheet_body)
+    response = request
+    pp.pprint(response)
 
-    if not values:
-        print('No data found.')
-    else:
-        print('Läser in...')
-        for i, row in enumerate(values):
+    
+    requests = []
+    # Change the spreadsheet's title.
+    requests.append({
+        'updateSpreadsheetProperties': {
+            'properties': {
+                'title': 'KLOCKARHAGSSKOLAN Diamanttest'
+            },
+            'fields': 'title'
+        }
+    })
 
-            # Print columns A and E, which correspond to indices 0 and 4.
-            try: # this will take care of eventually empty cells.
-                # name = "\""+row[0]+"\""
-                print('%s, %s' % (row[0], row[1]))
-                # name = row[0]
-                # email = row[1]
-                # names.append(name)
-                # emails.append(email)
-            except Exception as e:
-                print("While reading rows from file error ->", e)
-        requests = []
-        # Change the spreadsheet's title.
-        requests.append({
-            'updateSpreadsheetProperties': {
-                'properties': {
-                    'title': 'Ny api title'
-                },
-                'fields': 'title'
+    # Update sheet name of first sheet.
+    requests.append({
+        "updateSheetProperties": {
+            "properties": {
+                "sheetId": 0,
+                "title": "Klass 7A",
+            },
+            "fields": "title"
+        }
+    })
+    # Change tab color on first sheet
+    requests.append({
+        "updateSheetProperties": {
+            "properties": {
+                "sheetId": 0,
+                "tabColor": {
+                    "red": 0.4,
+                    "green": 0.3,
+                    "blue": 1.0
+                }
+            },
+            "fields": "tabColor"
+        }
+    })
+    # Adjust column width
+    requests.append({
+        "updateDimensionProperties": {
+            "range": {
+                "dimension": "COLUMNS",
+                "startIndex": 0,
+                "endIndex": 1
+            },
+            "properties": {
+                "pixelSize": 50
+            },
+            "fields": "pixelSize"
+        }
+    })
+    # Add new sheet tab
+    requests.append({
+        "addSheet": {
+            "properties": {
+                "title": "Klass 7B",
+                "tabColor": {
+                    "red": 1.0,
+                    "green": 0.3,
+                    "blue": 0.4
+                }
             }
-        })
-        # Add additional requests (operations) ...
+        }
+    })
+    
 
+    # Trying to get the properties of the spreadsheet
+    try:
+        fields="sheets.properties"
+        request = service.spreadsheets().get(spreadsheetId=SAMPLE_SPREADSHEET_ID, fields=fields)
+        response = request.execute()
+
+        # TODO: Change code below to process the `response` dict:
+        # pp.pprint(response)
+        
+        # How to iterate the response and get title of a sheet
+        # for prop in response['sheets']:
+        #     print(prop['properties']['title'])
+    except Exception as e:
+        print("While trying spreadsheets().get() error: ", e)
+
+    # Trying to update spreadsheet with assigned requests
+    try:
+        # Gather the requests to body and batchUpdate
         body = {
             'requests': requests
         }
         response = service.spreadsheets().batchUpdate(spreadsheetId=SAMPLE_SPREADSHEET_ID, body=body).execute()
-        find_replace_response = response.get('replies')[1].get('findReplace')
-        print('{0} replacements made.'.format(
-            find_replace_response.get('occurrencesChanged')))
+        
+        print("batchUpdated:")
+        pp.pprint(body['requests'])
+    except Exception as e:
+        print("While trying to batchUpdate error: ", e)
+    # find_replace_response = response.get('replies')[1].get('findReplace')
+    # print('{0} replacements made.'.format(
+    #     find_replace_response.get('occurrencesChanged')))
+
+    try:
+        range = "Klass 7A!A1:B"
+        values = [
+            ["Klass", "Namn"],
+            ["7A", "Andersson, Magnus"]
+        ]
+        resource = {
+            "values": values
+        }
+        # use append to add rows and update to overwrite
+        response = service.spreadsheets().values().update(spreadsheetId=SAMPLE_SPREADSHEET_ID, range=range, body=resource, valueInputOption="USER_ENTERED").execute()
+        print("appended value reponse: ", response)
+    except Exception as e:
+        print("While trying to append values error: ", e)
 
 if __name__ == '__main__':
     main()
