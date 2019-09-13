@@ -16,6 +16,7 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 # SAMPLE_SPREADSHEET_ID = SHEET_TO_UPDATE_ID
 # SAMPLE_RANGE_NAME = 'Blad1!A1:B'
 
+# Placeholders for soon to be created spreadsheet
 spreadsheet = {}
 SPREADSHEET_ID = ""
 
