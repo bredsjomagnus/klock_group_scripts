@@ -3,6 +3,7 @@ import pickle
 import os.path
 import pprint
 from env import *
+from sheet_config import *
 import pandas as pd
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -63,67 +64,74 @@ def main():
 
 
     requests = []
-    # Change the spreadsheet's title.
-    requests.append({
-        'updateSpreadsheetProperties': {
-            'properties': {
-                'title': 'KLOCKARHAGSSKOLAN Diamanttest'
-            },
-            'fields': 'title'
-        }
-    })
+    
+    for setting in spreadsheet_settings:
+        requests.append(spreadsheet_settings[setting])
+    
+    for col_width in columns:
+        requests.append(columns[col_width])
 
-    # Update sheet name of first sheet.
-    requests.append({
-        "updateSheetProperties": {
-            "properties": {
-                "sheetId": 0,
-                "title": "Klass 7A",
-            },
-            "fields": "title"
-        }
-    })
-    # Change tab color on first sheet
-    requests.append({
-        "updateSheetProperties": {
-            "properties": {
-                "sheetId": 0,
-                "tabColor": {
-                    "red": 0.4,
-                    "green": 0.3,
-                    "blue": 1.0
-                }
-            },
-            "fields": "tabColor"
-        }
-    })
-    # Adjust column width
-    requests.append({
-        "updateDimensionProperties": {
-            "range": {
-                "dimension": "COLUMNS",
-                "startIndex": 0,
-                "endIndex": 1
-            },
-            "properties": {
-                "pixelSize": 50
-            },
-            "fields": "pixelSize"
-        }
-    })
-    # Add new sheet tab
-    requests.append({
-        "addSheet": {
-            "properties": {
-                "title": "Klass 7B",
-                "tabColor": {
-                    "red": 1.0,
-                    "green": 0.3,
-                    "blue": 0.4
-                }
-            }
-        }
-    })
+    # Change the spreadsheet's title.
+    # requests.append({
+    #     'updateSpreadsheetProperties': {
+    #         'properties': {
+    #             'title': 'KLOCKARHAGSSKOLAN Diamanttest'
+    #         },
+    #         'fields': 'title'
+    #     }
+    # })
+
+    # # Update sheet name of first sheet.
+    # requests.append({
+    #     "updateSheetProperties": {
+    #         "properties": {
+    #             "sheetId": 0,
+    #             "title": "Klass 7A",
+    #         },
+    #         "fields": "title"
+    #     }
+    # })
+    # # Change tab color on first sheet
+    # requests.append({
+    #     "updateSheetProperties": {
+    #         "properties": {
+    #             "sheetId": 0,
+    #             "tabColor": {
+    #                 "red": 0.4,
+    #                 "green": 0.3,
+    #                 "blue": 1.0
+    #             }
+    #         },
+    #         "fields": "tabColor"
+    #     }
+    # })
+    # # Adjust column width
+    # requests.append({
+    #     "updateDimensionProperties": {
+    #         "range": {
+    #             "dimension": "COLUMNS",
+    #             "startIndex": 0,
+    #             "endIndex": 1
+    #         },
+    #         "properties": {
+    #             "pixelSize": 50
+    #         },
+    #         "fields": "pixelSize"
+    #     }
+    # })
+    # # Add new sheet tab
+    # requests.append({
+    #     "addSheet": {
+    #         "properties": {
+    #             "title": "Klass 7B",
+    #             "tabColor": {
+    #                 "red": 1.0,
+    #                 "green": 0.3,
+    #                 "blue": 0.4
+    #             }
+    #         }
+    #     }
+    # })
     
 
     # Trying to get the properties of the spreadsheet
@@ -168,7 +176,7 @@ def main():
         }
         # use append to add rows and update to overwrite
         response = service.spreadsheets().values().update(spreadsheetId=SPREADSHEET_ID, range=range, body=resource, valueInputOption="USER_ENTERED").execute()
-        print("appended value reponse: ", response)
+        # print("appended value reponse: ", response)
     except Exception as e:
         print("While trying to append values error: ", e)
 
