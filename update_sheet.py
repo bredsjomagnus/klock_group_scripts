@@ -1,6 +1,7 @@
 from __future__ import print_function
 import pickle
 import os.path
+import sys
 import pprint
 from env import *
 from sheet_config import *
@@ -22,11 +23,7 @@ spreadsheet = {}
 SPREADSHEET_ID = ""
 
 # FILENAME = 'elevnamn_till_elevmail_TEST.csv'
-
-def main():
-    """Shows basic usage of the Sheets API.
-    Prints values from a sample spreadsheet.
-    """
+def authenticate():
     creds = None
     # The file token.pickle stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
@@ -47,8 +44,14 @@ def main():
             pickle.dump(creds, token)
 
     service = build('sheets', 'v4', credentials=creds)
-    
-    # CREATE SPREADSHEET
+
+    return service
+
+def create_spreadsheet(service):
+    """
+    Create new spreadsheet
+    """
+    SPREADSHEET_ID = ""
     spreadsheet_body = {
         "properties": {
             "title": "API genererat dokument"
@@ -61,15 +64,124 @@ def main():
         print("spreadsheet id: ", SPREADSHEET_ID)
     except Exception as e:
         print("While trying to create new spreadsheet error: ", e)
+        sys.exit()
+    
+    return SPREADSHEET_ID
+
+def update_spreadsheet(service, SPREADSHEET_ID, body, message="No message"):
+
+    response = service.spreadsheets().batchUpdate(spreadsheetId=SPREADSHEET_ID, body=body).execute()
+
+    # print(message)
+
+    return response
 
 
+def create_sheets(service, SPREADSHEET_ID, sheet_objects):
     requests = []
+
+    # CREATE SHEETS
+    for sheet in sheet_objects:
+        requests.append(sheet_objects[sheet])
+
+    # Trying to update spreadsheet with assigned requests
+    try:
+        body = {
+            "requests": requests
+        }
+        response = update_spreadsheet(service, SPREADSHEET_ID, body, "Sheets created")
+    except Exception as e:
+        print("While trying to batchUpdate error: ", e)
+        sys.exit()
+
+    return response
     
-    for setting in spreadsheet_settings:
-        requests.append(spreadsheet_settings[setting])
+
+def get_sheet_ids(service, SPREADSHEET_ID):
+    sheet_ids = []
+    # Trying to get sheetIds
+    try:
+        fields="sheets.properties"
+        request = service.spreadsheets().get(spreadsheetId=SPREADSHEET_ID, fields=fields)
+        response = request.execute()
+
+        # TODO: Change code below to process the `response` dict:
+        # pp.pprint(response)
+        
+        # How to iterate the response and get title of a sheet
+        for prop in response['sheets']:
+            print(prop['properties']['title'])
+            sheet_ids.append(prop['properties']['sheetId'])
+    except Exception as e:
+        print("While trying spreadsheets().get() error: ", e)
+        sys.exit()
+
+    return sheet_ids
+
+def customize_columns(service, SPREADSHEET_ID, columns):
+    requests = []
+    for key in columns:
+        requests.append(columns[key])
     
-    for col_width in columns:
-        requests.append(columns[col_width])
+    # Trying to update spreadsheet with assigned requests
+    try:
+        body = {
+            "requests": requests
+        }
+        response = update_spreadsheet(service, SPREADSHEET_ID, body, "Columns set")
+        return response
+    except Exception as e:
+        print("While trying to batchUpdate error: ", e)
+        sys.exit()
+
+def add_columns(service, SPREADSHEET_ID, add_column_objects):
+    requests = []
+    for key in add_column_objects:
+        requests.append(add_column_objects[key])
+    # Trying to update spreadsheet with assigned requests
+    try:
+        body = {
+            "requests": requests
+        }
+        response = update_spreadsheet(service, SPREADSHEET_ID, body, "Added columns")
+        return response
+    except Exception as e:
+        print("While trying to batchUpdate error: ", e)
+        sys.exit()
+     
+
+
+def main():
+    """Shows basic usage of the Sheets API.
+    Prints values from a sample spreadsheet.
+    """
+    
+
+    service = authenticate()
+
+    SPREADSHEET_ID = create_spreadsheet(service)
+
+    create_sheets(service, SPREADSHEET_ID, sheet_objects)
+    
+    sheetIds = get_sheet_ids(service, SPREADSHEET_ID)
+
+    add_column_objects = generate_add_column_object(sheet_template, sheetIds)
+
+    if len(add_column_objects) > 0:
+        add_columns(service, SPREADSHEET_ID, add_column_objects)
+    
+    columns = generate_columns_update_object(template_complied_results, sheetIds)
+    
+    customize_columns(service, SPREADSHEET_ID, columns)
+    
+
+
+
+    # for setting in spreadsheet_settings:
+    #     requests.append(spreadsheet_settings[setting])
+    
+    # for col_width in columns:
+    #     requests.append(columns[col_width])
 
     # Change the spreadsheet's title.
     # requests.append({
@@ -134,51 +246,50 @@ def main():
     # })
     
 
-    # Trying to get the properties of the spreadsheet
-    try:
-        fields="sheets.properties"
-        request = service.spreadsheets().get(spreadsheetId=SPREADSHEET_ID, fields=fields)
-        response = request.execute()
+    # # Trying to get the properties of the spreadsheet
+    # try:
+    #     fields="sheets.properties"
+    #     request = service.spreadsheets().get(spreadsheetId=SPREADSHEET_ID, fields=fields)
+    #     response = request.execute()
 
-        # TODO: Change code below to process the `response` dict:
-        # pp.pprint(response)
+    #     # TODO: Change code below to process the `response` dict:
+    #     # pp.pprint(response)
         
-        # How to iterate the response and get title of a sheet
-        # for prop in response['sheets']:
-        #     print(prop['properties']['title'])
-    except Exception as e:
-        print("While trying spreadsheets().get() error: ", e)
+    #     # How to iterate the response and get title of a sheet
+    #     # for prop in response['sheets']:
+    #     #     print(prop['properties']['title'])
+    # except Exception as e:
+    #     print("While trying spreadsheets().get() error: ", e)
 
     # Trying to update spreadsheet with assigned requests
-    try:
-        # Gather the requests to body and batchUpdate
-        body = {
-            'requests': requests
-        }
-        response = service.spreadsheets().batchUpdate(spreadsheetId=SPREADSHEET_ID, body=body).execute()
+    # try:
+    #     # Gather the requests to body and batchUpdate
+    #     body = {
+    #         'requests': requests
+    #     }
+    #     response = service.spreadsheets().batchUpdate(spreadsheetId=SPREADSHEET_ID, body=body).execute()
         
-        print("batchUpdated:")
-        pp.pprint(body['requests'])
-    except Exception as e:
-        print("While trying to batchUpdate error: ", e)
-    # find_replace_response = response.get('replies')[1].get('findReplace')
-    # print('{0} replacements made.'.format(
-    #     find_replace_response.get('occurrencesChanged')))
+    #     print("SUCCESS")
+    # except Exception as e:
+    #     print("While trying to batchUpdate error: ", e)
+    # # find_replace_response = response.get('replies')[1].get('findReplace')
+    # # print('{0} replacements made.'.format(
+    # #     find_replace_response.get('occurrencesChanged')))
 
-    try:
-        range = "Klass 7A!A1:B"
-        values = [
-            ["Klass", "Namn"],
-            ["7A", "Andersson, Magnus"]
-        ]
-        resource = {
-            "values": values
-        }
-        # use append to add rows and update to overwrite
-        response = service.spreadsheets().values().update(spreadsheetId=SPREADSHEET_ID, range=range, body=resource, valueInputOption="USER_ENTERED").execute()
-        # print("appended value reponse: ", response)
-    except Exception as e:
-        print("While trying to append values error: ", e)
+    # try:
+    #     range = "Klass 7A!A1:B"
+    #     values = [
+    #         ["Klass", "Namn"],
+    #         ["7A", "Andersson, Magnus"]
+    #     ]
+    #     resource = {
+    #         "values": values
+    #     }
+    #     # use append to add rows and update to overwrite
+    #     response = service.spreadsheets().values().update(spreadsheetId=SPREADSHEET_ID, range=range, body=resource, valueInputOption="USER_ENTERED").execute()
+    #     # print("appended value reponse: ", response)
+    # except Exception as e:
+    #     print("While trying to append values error: ", e)
 
 if __name__ == '__main__':
     main()
