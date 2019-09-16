@@ -1,10 +1,15 @@
 SPREADSHEET_TITLE = "API genereated DIAMANT DOC"
 NUMBER_OF_TESTES = 3
-
+HEADER_1 =[
+            ["Klass", "", "19/20", "HT", "", "Diagram"],
+            ["", "", "", "test1", "test2", "test3"],
+            ["Elev", "SVA", "Kön", "test1", "test2", "test3"],
+        ]
 
 # Template for compiled results
 trailing_widths = [40] * 5
-template_complied_results = [75] * (3 + NUMBER_OF_TESTES)
+template_complied_results = [200]
+template_complied_results.extend([75] * (2 + NUMBER_OF_TESTES))
 template_complied_results.extend(trailing_widths)
 
 
@@ -13,7 +18,9 @@ tests = [3, 15, 17]
 test_spacer = [10]
 test_result = [50]
 
-template_diagnostics = [75] * 3
+# Building template_diagnostics, starting with first three columns.
+template_diagnostics = [200]
+template_diagnostics.extend([75] * 2)
 for x in tests:
     test = []
     test = [25] * x
@@ -21,21 +28,57 @@ for x in tests:
     test.extend(test_spacer)
     template_diagnostics.extend(test)
 
+# Collecting the different templates in template_dict:dictionary
 template_dict = {
-    "template_1": template_complied_results,
-    "template_2": template_diagnostics
+    "template_1": {
+        "sheets": ["Klass 7A", "Klass 7B", "Klass 7C"],
+        "header": HEADER_1,
+        "columns": template_complied_results
+    },
+    "template_2": {
+        "sheets": ["Klass 7A - Diagnoser", "Klass 7B - Diagnoser", "Klass 7C - Diagnoser"],
+        "header": [
+            ["Klass", "19/20", "HT"],
+            ["", "", ""],
+            ["Elev", "SVA", "Kön"],
+        ],
+        "columns": template_diagnostics
+    }
 }
 
+def generate_temp_dict():
+    template_dict = {
+        "template_1": {
+            "sheets": ["Klass 7A", "Klass 7B", "Klass 7C"],
+            "header": HEADER_1,
+            "columns": template_complied_results
+        },
+        "template_2": {
+            "sheets": ["Klass 7A - Diagnoser", "Klass 7B - Diagnoser", "Klass 7C - Diagnoser"],
+            "header": [
+                ["Klass", "19/20", "HT"],
+                ["", "", ""],
+                ["Elev", "SVA", "Kön"],
+            ],
+            "columns": template_diagnostics
+        }
+    }
 
-# print("column_widths:", column_widths)
+    return template_dict
 
-# sheet_names = ["Klass 7A", "Klass 7B", "Klass 7C", "Klass 8A", "Klass 8B", "Klass 8C"]
-sheet_names = ["Klass 7A", "Klass 7A - Diagnoser", "Klass 7B", "Klass 7B - Diagnoser"]
-sheet_template = [template_dict['template_1'], template_dict['template_2'], template_dict['template_1'], template_dict['template_2']]
+sheet_names = ["Klass 7A", "Klass 7A - Diagnoser", "Klass 7B", "Klass 7B - Diagnoser", "Klass 7C", "Klass 7C - Diagnoser"]
+sheet_template = [
+    template_dict['template_1']['columns'], 
+    template_dict['template_2']['columns'], 
+    template_dict['template_1']['columns'], 
+    template_dict['template_2']['columns'],
+    template_dict['template_1']['columns'], 
+    template_dict['template_2']['columns'],
+]
 
 tabcolor = {
     "Klass 7A": {
-        "red": 0.2,
+        "red": 0.4,
         "green": 0.3,
         "blue": 1.0
     },
@@ -45,14 +88,24 @@ tabcolor = {
         "blue": 1.0
     },
     "Klass 7B": {
-        "red": 0.2,
-        "green": 1.0,
-        "blue": 0.3
+        "red": 0.4,
+        "green": 0.8,
+        "blue": 0.4
     },
     "Klass 7B - Diagnoser": {
         "red": 0.4,
-        "green": 1.0,
-        "blue": 0.3
+        "green": 0.8,
+        "blue": 0.4
+    },
+    "Klass 7C": {
+        "red": 1.0,
+        "green": 0.2,
+        "blue": 0.2
+    },
+    "Klass 7C - Diagnoser": {
+        "red": 1.0,
+        "green": 0.2,
+        "blue": 0.2
     }
 }
 
