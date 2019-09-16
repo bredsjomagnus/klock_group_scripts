@@ -16,11 +16,6 @@ pp = pprint.PrettyPrinter(indent=2)
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
-header_1 = [
-            ["Klass", "", "19/20", "HT", "", "Diagram"],
-            ["", "", "", "test1", "test2", "test3"],
-            ["Elev", "SVA", "Kön", "test1", "test2", "test3"],
-        ]
 # The ID and range of a sample spreadsheet.
 # SAMPLE_SPREADSHEET_ID = SHEET_TO_UPDATE_ID
 # SAMPLE_RANGE_NAME = 'Blad1!A1:B'
@@ -209,10 +204,7 @@ def add_content(service, SPREADSHEET_ID):
         # print(elever_namn)
         # print(elever_personnummer)
 
-        header = None
-        
-        header = generate_temp_dict()
-        content = header['template_1']['header']
+        content = template_dict['template_1']['header']
         klass_range = sheet + "!A1:F"
         try:
             range = klass_range

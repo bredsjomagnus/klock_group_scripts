@@ -5,6 +5,11 @@ HEADER_1 =[
             ["", "", "", "test1", "test2", "test3"],
             ["Elev", "SVA", "Kön", "test1", "test2", "test3"],
         ]
+HEADER_2 = [
+            ["Klass", "19/20", "HT"],
+            ["", "", ""],
+            ["Elev", "SVA", "Kön"],
+        ]
 
 # Template for compiled results
 trailing_widths = [40] * 5
@@ -37,34 +42,11 @@ template_dict = {
     },
     "template_2": {
         "sheets": ["Klass 7A - Diagnoser", "Klass 7B - Diagnoser", "Klass 7C - Diagnoser"],
-        "header": [
-            ["Klass", "19/20", "HT"],
-            ["", "", ""],
-            ["Elev", "SVA", "Kön"],
-        ],
+        "header": HEADER_2,
         "columns": template_diagnostics
     }
 }
 
-def generate_temp_dict():
-    template_dict = {
-        "template_1": {
-            "sheets": ["Klass 7A", "Klass 7B", "Klass 7C"],
-            "header": HEADER_1,
-            "columns": template_complied_results
-        },
-        "template_2": {
-            "sheets": ["Klass 7A - Diagnoser", "Klass 7B - Diagnoser", "Klass 7C - Diagnoser"],
-            "header": [
-                ["Klass", "19/20", "HT"],
-                ["", "", ""],
-                ["Elev", "SVA", "Kön"],
-            ],
-            "columns": template_diagnostics
-        }
-    }
-
-    return template_dict
 
 sheet_names = ["Klass 7A", "Klass 7A - Diagnoser", "Klass 7B", "Klass 7B - Diagnoser", "Klass 7C", "Klass 7C - Diagnoser"]
 sheet_template = [
