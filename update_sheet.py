@@ -54,7 +54,7 @@ def create_spreadsheet(service):
     SPREADSHEET_ID = ""
     spreadsheet_body = {
         "properties": {
-            "title": "API genererat dokument"
+            "title": SPREADSHEET_TITLE
         }
     }
     try:
@@ -69,10 +69,13 @@ def create_spreadsheet(service):
     return SPREADSHEET_ID
 
 def update_spreadsheet(service, SPREADSHEET_ID, body, message="No message"):
+    """
+    Update batch of requests in body
+    """
 
     response = service.spreadsheets().batchUpdate(spreadsheetId=SPREADSHEET_ID, body=body).execute()
 
-    # print(message)
+    print(message)
 
     return response
 
@@ -119,6 +122,10 @@ def get_sheet_ids(service, SPREADSHEET_ID):
     return sheet_ids
 
 def customize_columns(service, SPREADSHEET_ID, columns):
+    """
+    Set column width in sheets. columns is generated in sheet_config.py
+    based on template and sheetId
+    """
     requests = []
     for key in columns:
         requests.append(columns[key])
@@ -135,6 +142,10 @@ def customize_columns(service, SPREADSHEET_ID, columns):
         sys.exit()
 
 def add_columns(service, SPREADSHEET_ID, add_column_objects):
+    """
+    Add columns to those sheets where need be. add_column_objects is generated
+    in sheet_config.py based on tamplate and sheetId
+    """
     requests = []
     for key in add_column_objects:
         requests.append(add_column_objects[key])
@@ -152,7 +163,8 @@ def add_columns(service, SPREADSHEET_ID, add_column_objects):
 
 
 def main():
-    """Shows basic usage of the Sheets API.
+    """
+    Shows basic usage of the Sheets API.
     Prints values from a sample spreadsheet.
     """
     
@@ -174,108 +186,6 @@ def main():
     
     customize_columns(service, SPREADSHEET_ID, columns)
     
-
-
-
-    # for setting in spreadsheet_settings:
-    #     requests.append(spreadsheet_settings[setting])
-    
-    # for col_width in columns:
-    #     requests.append(columns[col_width])
-
-    # Change the spreadsheet's title.
-    # requests.append({
-    #     'updateSpreadsheetProperties': {
-    #         'properties': {
-    #             'title': 'KLOCKARHAGSSKOLAN Diamanttest'
-    #         },
-    #         'fields': 'title'
-    #     }
-    # })
-
-    # # Update sheet name of first sheet.
-    # requests.append({
-    #     "updateSheetProperties": {
-    #         "properties": {
-    #             "sheetId": 0,
-    #             "title": "Klass 7A",
-    #         },
-    #         "fields": "title"
-    #     }
-    # })
-    # # Change tab color on first sheet
-    # requests.append({
-    #     "updateSheetProperties": {
-    #         "properties": {
-    #             "sheetId": 0,
-    #             "tabColor": {
-    #                 "red": 0.4,
-    #                 "green": 0.3,
-    #                 "blue": 1.0
-    #             }
-    #         },
-    #         "fields": "tabColor"
-    #     }
-    # })
-    # # Adjust column width
-    # requests.append({
-    #     "updateDimensionProperties": {
-    #         "range": {
-    #             "dimension": "COLUMNS",
-    #             "startIndex": 0,
-    #             "endIndex": 1
-    #         },
-    #         "properties": {
-    #             "pixelSize": 50
-    #         },
-    #         "fields": "pixelSize"
-    #     }
-    # })
-    # # Add new sheet tab
-    # requests.append({
-    #     "addSheet": {
-    #         "properties": {
-    #             "title": "Klass 7B",
-    #             "tabColor": {
-    #                 "red": 1.0,
-    #                 "green": 0.3,
-    #                 "blue": 0.4
-    #             }
-    #         }
-    #     }
-    # })
-    
-
-    # # Trying to get the properties of the spreadsheet
-    # try:
-    #     fields="sheets.properties"
-    #     request = service.spreadsheets().get(spreadsheetId=SPREADSHEET_ID, fields=fields)
-    #     response = request.execute()
-
-    #     # TODO: Change code below to process the `response` dict:
-    #     # pp.pprint(response)
-        
-    #     # How to iterate the response and get title of a sheet
-    #     # for prop in response['sheets']:
-    #     #     print(prop['properties']['title'])
-    # except Exception as e:
-    #     print("While trying spreadsheets().get() error: ", e)
-
-    # Trying to update spreadsheet with assigned requests
-    # try:
-    #     # Gather the requests to body and batchUpdate
-    #     body = {
-    #         'requests': requests
-    #     }
-    #     response = service.spreadsheets().batchUpdate(spreadsheetId=SPREADSHEET_ID, body=body).execute()
-        
-    #     print("SUCCESS")
-    # except Exception as e:
-    #     print("While trying to batchUpdate error: ", e)
-    # # find_replace_response = response.get('replies')[1].get('findReplace')
-    # # print('{0} replacements made.'.format(
-    # #     find_replace_response.get('occurrencesChanged')))
-
     # try:
     #     range = "Klass 7A!A1:B"
     #     values = [
