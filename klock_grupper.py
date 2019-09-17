@@ -54,16 +54,22 @@ def log_difference(new_df, old_df, group_name):
     """
     log = "CHANGES MADE\n\n"
     time_stamp = str(datetime.datetime.now())[:10] # 2019-09-04
-
+    logged = False
     # REMOVED
     removed_df = old_df.merge(new_df,indicator = True, how='left').loc[lambda x : x['_merge']!='both']
     if len(removed_df.index) > 0:
         log += "Removed:\n" + removed_df.to_string() + "\n\n"
+        logged = True
 
     # ADDED
     added_df = new_df.merge(old_df,indicator = True, how='left').loc[lambda x : x['_merge']!='both']
     if len(added_df.index) > 0:
         log += "Added:\n" + added_df.to_string()
+        logged = True
+    
+    if not logged:
+        log += "NOTHING ADDED OR REMOVED BUT SOMETHING CHANGED:\n\nOld_df:\n" + old_df.to_string()
+        log += "\n\nNew_df:\n" + new_df.to_string()
 
     # CREATE LOG
     filepath = os.path.join(os.path.dirname(__file__), "changelogs/"+time_stamp+" "+group_name+" LOG.txt")

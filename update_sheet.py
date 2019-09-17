@@ -7,6 +7,7 @@ import pprint
 import pandas as pd
 from env import *
 from sheet_config import *
+from diamant_test_config import *
 import pandas as pd
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -108,7 +109,8 @@ def get_sheet_ids(service, SPREADSHEET_ID):
     Getting the proporites of the created sheets.
     """
     print("Getting sheet proporties...")
-    sheet_ids = []
+    # sheet_ids = []
+    sheet_dict = {}
     # Trying to get sheetIds
     try:
         fields="sheets.properties"
@@ -121,12 +123,13 @@ def get_sheet_ids(service, SPREADSHEET_ID):
         # How to iterate the response and get title of a sheet
         for prop in response['sheets']:
             print(prop['properties']['title'])
-            sheet_ids.append(prop['properties']['sheetId'])
+            # sheet_ids.append(prop['properties']['sheetId'])
+            sheet_dict[prop['properties']['title']] = prop['properties']['sheetId']
     except Exception as e:
         print("While trying spreadsheets().get() error: ", e)
         sys.exit()
-
-    return sheet_ids
+    pp.pprint(sheet_dict)
+    return sheet_dict
 
 def customize_columns(service, SPREADSHEET_ID, columns):
     """
@@ -169,43 +172,25 @@ def add_columns(service, SPREADSHEET_ID, add_column_objects):
         print("While trying to batchUpdate error: ", e)
         sys.exit()
     
-def add_content(service, SPREADSHEET_ID):
+def add_content(service, SPREADSHEET_ID, sheet_dict):
     """
     Add content to sheets cells.
     """
     print("Adding content to sheets...")
-    df = pd.read_csv("elevlista.csv", index_col=False)
-    for sheet in sheet_names:
-        re_object = re.search("(\s\d\w+)", sheet)
-        klass = re_object.group().strip()
-        # print("sheet: %s, klass: %s" % (sheet, klass))
-        klass_df = df[df['Elev Klass'].str.contains(klass)]
-
-        # Collect students names
-        elever_namn = klass_df.loc[:,'Elev Namn'].tolist()
-
-        # Collect SVA students and put there names in a list
-        elever_sva = klass_df[klass_df['Elev Grupper'].str.contains('SVA')]
-        elever_sva = elever_sva.loc[:, 'Elev Namn'].tolist()
-
-        # Collect personnummer and determine gender
-        elever_personnummer = klass_df.loc[:, 'Elev Personnummer'].tolist()
-        elever_gender = []
-        for pn in elever_personnummer:
-            pn = str(pn)
-            pn = pn[-2:-1]
-            if int(pn)%2 == 0:
-                elever_gender.append('Flicka')
-            else:
-                elever_gender.append('Pojke')
-
+    
+    for key, value in sheet_dict.items():
+        sheet_name = key
+        # HEADER
+        content = []
+        template = ""
+        if sheet_name in template_dict['template_1']['sheets']:
+            content = template_dict['template_1']['header']
+            template = 'template_1'
+        else:
+            content = template_dict['template_2']['header']
+            template = 'template_2'
         
-
-        # print(elever_namn)
-        # print(elever_personnummer)
-
-        content = template_dict['template_1']['header']
-        klass_range = sheet + "!A1:F"
+        klass_range = sheet_name + "!A1"
         try:
             range = klass_range
             values = content
@@ -218,34 +203,80 @@ def add_content(service, SPREADSHEET_ID):
         except Exception as e:
             print("While trying to append values error: ", e)
             sys.exit()
-
-        # print("Klass %s: %s" % (klass, elever_namn))
-
+        
         content = []
-        # print("header", template_dict["template_1"]["header"])
-        for i, namn in enumerate(elever_namn):
-            elev = []
-            elev.append(namn)
-            if namn in elever_sva:
-                elev.append('Ja')
-            else:
-                elev.append('Nej')
-            elev.append(elever_gender[i])
-            content.append(elev)
-        # print("content", content)
-        # template_dict["template_1"]["header"] = template_dict["template_1"]["header"]
-        klass_range = sheet + "!A4:F"
-        try:
-            range = klass_range
-            values = content
-            resource = {
-                "values": values
-            }
-            # use append to add rows and update to overwrite
-            response = service.spreadsheets().values().update(spreadsheetId=SPREADSHEET_ID, range=range, body=resource, valueInputOption="USER_ENTERED").execute()
-            # print("appended value reponse: ", response)
-        except Exception as e:
-            print("While trying to append values error: ", e)
+        if template_dict[template]['testTasks']:
+            test_row = []
+            for test in template_dict[template]['tests']:
+                test_row.extend(diamant_tests[test]["tasks"])
+                test_row.extend(["Poäng", ""])
+            content.append(test_row)
+                
+            klass_range = sheet_name + "!D3"
+            try:
+                range = klass_range
+                values = content
+                resource = {
+                    "values": values
+                }
+                # use append to add rows and update to overwrite
+                response = service.spreadsheets().values().update(spreadsheetId=SPREADSHEET_ID, range=range, body=resource, valueInputOption="USER_ENTERED").execute()
+                # print("appended value reponse: ", response)
+            except Exception as e:
+                print("While trying to append values error: ", e)
+                sys.exit()
+
+        if template_dict[template]['generateClass']:
+            df = pd.read_csv("elevlista.csv", index_col=False)
+            # STUDENTS; NAME, SVA, GENDER
+            re_object = re.search("(\s\d\w+)", sheet_name)
+            klass = re_object.group().strip()
+            # print("sheet: %s, klass: %s" % (sheet, klass))
+            klass_df = df[df['Elev Klass'].str.contains(klass)]
+
+            # Collect students names
+            elever_namn = klass_df.loc[:,'Elev Namn'].tolist()
+
+            # Collect SVA students and put there names in a list
+            elever_sva = klass_df[klass_df['Elev Grupper'].str.contains('SVA')]
+            elever_sva = elever_sva.loc[:, 'Elev Namn'].tolist()
+
+            # Collect personnummer and determine gender
+            elever_personnummer = klass_df.loc[:, 'Elev Personnummer'].tolist()
+            elever_gender = []
+            for pn in elever_personnummer:
+                pn = str(pn)
+                pn = pn[-2:-1]
+                if int(pn)%2 == 0:
+                    elever_gender.append('Flicka')
+                else:
+                    elever_gender.append('Pojke')
+
+            content = []
+            # print("header", template_dict["template_1"]["header"])
+            for i, namn in enumerate(elever_namn):
+                elev = []
+                elev.append(namn)
+                if namn in elever_sva:
+                    elev.append('Ja')
+                else:
+                    elev.append('Nej')
+                elev.append(elever_gender[i])
+                content.append(elev)
+            # print("content", content)
+            # template_dict["template_1"]["header"] = template_dict["template_1"]["header"]
+            klass_range = sheet_name + "!A4:F"
+            try:
+                range = klass_range
+                values = content
+                resource = {
+                    "values": values
+                }
+                # use append to add rows and update to overwrite
+                response = service.spreadsheets().values().update(spreadsheetId=SPREADSHEET_ID, range=range, body=resource, valueInputOption="USER_ENTERED").execute()
+                # print("appended value reponse: ", response)
+            except Exception as e:
+                print("While trying to append values error: ", e)
      
 
 
@@ -262,18 +293,18 @@ def main():
 
     create_sheets(service, SPREADSHEET_ID, sheet_objects)
     
-    sheetIds = get_sheet_ids(service, SPREADSHEET_ID)
+    sheet_dict = get_sheet_ids(service, SPREADSHEET_ID)
 
-    add_column_objects = generate_add_column_object(sheet_template, sheetIds)
+    add_column_objects = generate_add_column_object(sheet_dict)
 
     if len(add_column_objects) > 0:
         add_columns(service, SPREADSHEET_ID, add_column_objects)
     
-    columns = generate_columns_update_object(template_complied_results, sheetIds)
+    columns = generate_columns_update_object(sheet_dict)
     
     customize_columns(service, SPREADSHEET_ID, columns)
 
-    add_content(service, SPREADSHEET_ID)
+    add_content(service, SPREADSHEET_ID, sheet_dict)
 
     
 
