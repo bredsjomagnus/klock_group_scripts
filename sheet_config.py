@@ -1,16 +1,56 @@
 from diamant_test_config import *
-
+import pprint
+pp = pprint.PrettyPrinter(indent=2)
 SPREADSHEET_TITLE = "API genereated DIAMANT DOC"
+sheet_names = [
+    "Klass 7A", 
+    "Klass 7A - Diagnoser", 
+    "Klass 7B", 
+    "Klass 7B - Diagnoser", 
+    "Klass 7C", 
+    "Klass 7C - Diagnoser",
+    "Klass 8A", 
+    "Klass 8A - Diagnoser", 
+    "Klass 8B", 
+    "Klass 8B - Diagnoser", 
+    "Klass 8C", 
+    "Klass 8C - Diagnoser",
+    ]
+TESTS_1 = ["tae1", "rb4", "rb5"]
+TESTS_2 = ["rb4", "rb5"]
 HEADER_1 = [
             ["Klass", "", "19/20", "HT", "", "Diagram"],
-            ["", "", "", "test1", "test2", "test3"],
-            ["Elev", "SVA", "Kön", "test1", "test2", "test3"],
+            ["", "", ""],
+            ["Elev", "SVA", "Kön"],
         ]
 HEADER_2 = [
             ["Klass", "19/20", "HT"],
             ["", "", ""],
             ["Elev", "SVA", "Kön"],
         ]
+HEADER_3 = [
+            ["Klass", "", "19/20", "HT", "", "Diagram"],
+            ["", "", ""],
+            ["Elev", "SVA", "Kön"],
+        ]
+HEADER_4 = [
+            ["Klass", "19/20", "HT"],
+            ["", "", ""],
+            ["Elev", "SVA", "Kön"],
+        ]
+for i, test in enumerate(TESTS_1):
+    test_name = [diamant_tests[test]['name']]
+    test_number = str(i +1)
+    HEADER_1[1].extend(test_name)
+    HEADER_1[2].extend(["Test " + test_number])
+
+for i, test in enumerate(TESTS_2):
+    test_name = [diamant_tests[test]['name']]
+    test_number = str(i +1)
+    HEADER_3[1].extend(test_name)
+    HEADER_3[2].extend(["Test " + test_number])
+
+# print(HEADER_1)
 
 def get_columns_list(test_tasks, test_list):
     columns_list = []
@@ -45,29 +85,46 @@ template_dict = {
     "template_1": {
         "sheets": ["Klass 7A", "Klass 7B", "Klass 7C"],
         "header": HEADER_1,
-        "tests": ["tae1", "rb4"],
-        "columns": get_columns_list(False, ["tae1", "rb4"]),
+        "tests": TESTS_1,
+        "columns": get_columns_list(False, TESTS_1),
         "generateClass": True,
         "testTasks": False
     },
     "template_2": {
         "sheets": ["Klass 7A - Diagnoser", "Klass 7B - Diagnoser", "Klass 7C - Diagnoser"],
         "header": HEADER_2,
-        "tests": ["tae1", "rb4"],
-        "columns": get_columns_list(True, ["tae1", "rb4"]),
+        "tests": TESTS_1,
+        "columns": get_columns_list(True, TESTS_1),
+        "generateClass": True,
+        "testTasks": True
+    },
+    "template_3": {
+        "sheets": ["Klass 8A", "Klass 8B", "Klass 8C"],
+        "header": HEADER_3,
+        "tests": TESTS_2,
+        "columns": get_columns_list(False, TESTS_2),
+        "generateClass": True,
+        "testTasks": False
+    },
+    "template_4": {
+        "sheets": ["Klass 8A - Diagnoser", "Klass 8B - Diagnoser", "Klass 8C - Diagnoser"],
+        "header": HEADER_4,
+        "tests": TESTS_2,
+        "columns": get_columns_list(True, TESTS_2),
         "generateClass": True,
         "testTasks": True
     }
 }
 
-def generate_template_columns(template_dict):
-    """
-    Build column arrays
-    """
-    pass
+sheet_template = {}
+for template in template_dict.keys():
+    # print(template)
+    for sheet in template_dict[template]["sheets"]:
+        sheet_template[sheet] = template
+
+# pp.pprint(sheet_template)
 
 
-sheet_names = ["Klass 7A", "Klass 7A - Diagnoser", "Klass 7B", "Klass 7B - Diagnoser", "Klass 7C", "Klass 7C - Diagnoser"]
 
 tabcolor = {
     "Klass 7A": {
@@ -96,6 +153,36 @@ tabcolor = {
         "blue": 0.2
     },
     "Klass 7C - Diagnoser": {
+        "red": 1.0,
+        "green": 0.2,
+        "blue": 0.2
+    },
+    "Klass 8A": {
+        "red": 0.4,
+        "green": 0.3,
+        "blue": 1.0
+    },
+    "Klass 8A - Diagnoser": {
+        "red": 0.4,
+        "green": 0.3,
+        "blue": 1.0
+    },
+    "Klass 8B": {
+        "red": 0.4,
+        "green": 0.8,
+        "blue": 0.4
+    },
+    "Klass 8B - Diagnoser": {
+        "red": 0.4,
+        "green": 0.8,
+        "blue": 0.4
+    },
+    "Klass 8C": {
+        "red": 1.0,
+        "green": 0.2,
+        "blue": 0.2
+    },
+    "Klass 8C - Diagnoser": {
         "red": 1.0,
         "green": 0.2,
         "blue": 0.2
@@ -144,12 +231,8 @@ def generate_add_column_object(sheet_dict):
     for key, value in sheet_dict.items():
         sheet_name = key
         sheet_id = value
-        columns_template = []
-        if sheet_name in template_dict['template_1']['sheets']:
-            columns_template = template_dict['template_1']['columns']
-        else:
-            columns_template = template_dict['template_2']['columns']
-
+        template = sheet_template[sheet_name]
+        columns_template = template_dict[template]['columns']
         add = len(columns_template) - 24 if len(columns_template) > 25 else 0
         if add > 0:
             add_column_objects[i] = {
@@ -175,10 +258,12 @@ def generate_columns_update_object(sheet_dict):
     for key, value in sheet_dict.items():
         sheet_name = key
         sheet_id = value
-        if sheet_name in template_dict['template_1']['sheets']:
-            columns_template = template_dict['template_1']['columns']
-        else:
-            columns_template = template_dict['template_2']['columns']
+        template = sheet_template[sheet_name]
+        columns_template = template_dict[template]['columns']
+        # if sheet_name in template_dict['template_1']['sheets']:
+        #     columns_template = template_dict['template_1']['columns']
+        # else:
+        #     columns_template = template_dict['template_2']['columns']
         for i, width in enumerate(columns_template):
             columns[list_index] = {
                 "updateDimensionProperties": {

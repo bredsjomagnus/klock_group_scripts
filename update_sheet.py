@@ -182,13 +182,14 @@ def add_content(service, SPREADSHEET_ID, sheet_dict):
         sheet_name = key
         # HEADER
         content = []
-        template = ""
-        if sheet_name in template_dict['template_1']['sheets']:
-            content = template_dict['template_1']['header']
-            template = 'template_1'
-        else:
-            content = template_dict['template_2']['header']
-            template = 'template_2'
+        template = sheet_template[sheet_name]
+        content = template_dict[template]['header']
+        # if sheet_name in template_dict['template_1']['sheets']:
+        #     content = template_dict['template_1']['header']
+        #     template = 'template_1'
+        # else:
+        #     content = template_dict['template_2']['header']
+        #     template = 'template_2'
         
         klass_range = sheet_name + "!A1"
         try:
