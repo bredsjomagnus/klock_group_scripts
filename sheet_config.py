@@ -2,53 +2,119 @@ from diamant_test_config import *
 import pprint
 pp = pprint.PrettyPrinter(indent=2)
 SPREADSHEET_TITLE = "API genereated DIAMANT DOC"
-sheet_names = [
-    "Klass 7A", 
-    "Klass 7A - Diagnoser", 
-    "Klass 7B", 
-    "Klass 7B - Diagnoser", 
-    "Klass 7C", 
-    "Klass 7C - Diagnoser",
-    "Klass 8A", 
-    "Klass 8A - Diagnoser", 
-    "Klass 8B", 
-    "Klass 8B - Diagnoser", 
-    "Klass 8C", 
-    "Klass 8C - Diagnoser",
+YEAR = "19/20"
+TERMIN = "HT"
+HEADER_TEMPLATE = [
+            ["Klass", YEAR, TERMIN],
+            ["", "", ""],
+            ["Elev", "SVA", "Kön"],
+        ]
+indata = {
+    0: [
+        ["4A", "4B", "4C", "4D"],
+        ["ag4", "as1", "as2"]
+    ],
+    1: [
+        ["5A", "5B", "5C", "5D"],
+        ["ag6", "ag8", "ag9", "mti1", "mti2"]
+    ],
+    2: [
+        ["6A", "6B", "6C", "6D"],
+        ["ag6", "as9", "rd1", "rd2"]
     ]
-TESTS_1 = ["tae1", "rb4", "rb5"]
-TESTS_2 = ["rb4", "rb5"]
-HEADER_1 = [
-            ["Klass", "", "19/20", "HT", "", "Diagram"],
-            ["", "", ""],
-            ["Elev", "SVA", "Kön"],
-        ]
-HEADER_2 = [
-            ["Klass", "19/20", "HT"],
-            ["", "", ""],
-            ["Elev", "SVA", "Kön"],
-        ]
-HEADER_3 = [
-            ["Klass", "", "19/20", "HT", "", "Diagram"],
-            ["", "", ""],
-            ["Elev", "SVA", "Kön"],
-        ]
-HEADER_4 = [
-            ["Klass", "19/20", "HT"],
-            ["", "", ""],
-            ["Elev", "SVA", "Kön"],
-        ]
-for i, test in enumerate(TESTS_1):
-    test_name = [diamant_tests[test]['name']]
-    test_number = str(i +1)
-    HEADER_1[1].extend(test_name)
-    HEADER_1[2].extend(["Test " + test_number])
+}
 
-for i, test in enumerate(TESTS_2):
-    test_name = [diamant_tests[test]['name']]
-    test_number = str(i +1)
-    HEADER_3[1].extend(test_name)
-    HEADER_3[2].extend(["Test " + test_number])
+
+
+def get_sheet_names(indata):
+    sheet_names = []
+    for key, value in indata.items():
+        for klass in value[0]:
+            sheet_names.append("Klass " + klass)
+            sheet_names.append("Klass " + klass + " - Diagnoser")
+    print(sheet_names)
+    return sheet_names
+
+def generate_header(indata, HT, diamant_tests):
+    headers = {}
+    ####
+    # header = {
+    #    0 : {
+    #        0 : [[]],
+    #        1 : [[]]
+    #    },
+    #    1 : {
+    #        0 : [[]],
+    #        1 : [[]] 
+    #    }
+    # }
+    ####
+
+    for key, value in indata.items():
+        ht_template = [
+            ["Klass", "19/20", "HT"],
+            ["", "", ""],
+            ["Elev", "SVA", "Kön"],
+        ]
+        h0 = {}
+        headers[key] = h0
+        headers[key][1] = [
+            ["Klass", "19/20", "HT"],
+            ["", "", ""],
+            ["Elev", "SVA", "Kön"],
+        ]
+        for i, test in enumerate(value[1]):
+            print("     test: ", test)
+            test_name = diamant_tests[test]['name']
+            test_number = str(i + 1)
+            ht_template[1].extend([test_name])
+            ht_template[2].extend(["Test " + test_number])
+        headers[key][0] = ht_template
+
+    return headers
+            
+
+
+
+sheet_names = get_sheet_names(indata)
+
+headers = generate_header(indata, HEADER_TEMPLATE.copy(), diamant_tests)
+pp.pprint(headers)
+
+# TESTS_1 = ["tae1", "rb4", "rb5"]
+# TESTS_2 = ["rb4", "rb5"]
+# HEADER_1 = [
+#             ["Klass", "", "19/20", "HT", "", "Diagram"],
+#             ["", "", ""],
+#             ["Elev", "SVA", "Kön"],
+#         ]
+# HEADER_2 = [
+#             ["Klass", "19/20", "HT"],
+#             ["", "", ""],
+#             ["Elev", "SVA", "Kön"],
+#         ]
+# HEADER_3 = [
+#             ["Klass", "", "19/20", "HT", "", "Diagram"],
+#             ["", "", ""],
+#             ["Elev", "SVA", "Kön"],
+#         ]
+# HEADER_4 = [
+#             ["Klass", "19/20", "HT"],
+#             ["", "", ""],
+#             ["Elev", "SVA", "Kön"],
+#         ]
+
+# for i, test in enumerate(TESTS_1):
+#     test_name = [diamant_tests[test]['name']]
+#     test_number = str(i + 1)
+#     HEADER_1[1].extend(test_name)
+#     HEADER_1[2].extend(["Test " + test_number])
+
+# for i, test in enumerate(TESTS_2):
+#     test_name = [diamant_tests[test]['name']]
+#     test_number = str(i +1)
+#     HEADER_3[1].extend(test_name)
+#     HEADER_3[2].extend(["Test " + test_number])
 
 # print(HEADER_1)
 
@@ -80,41 +146,84 @@ def get_columns_list(test_tasks, test_list):
         
     return columns_list
 
+def generate_template_dict(indata, headers):
+    template_dict = {}
+   
+    for key, value in indata.items():
+        template = {}
+        template_number = (key+1)*2-1
+        template_name = "template_" + str(template_number)
+        template_dict[template_name] = template # dictionariet får ett tomt dictionary
+        # first template
+        sheet_list = []
+        for klass in indata[key][0]:
+            k = "Klass " + klass
+            sheet_list.append(k)
+
+        template_dict[template_name]['sheets'] = sheet_list
+        template_dict[template_name]['header'] = headers[key][0]
+        template_dict[template_name]['tests'] = indata[key][1]
+        template_dict[template_name]['columns'] = get_columns_list(False, indata[key][1])
+        template_dict[template_name]['generateClass'] = True
+        template_dict[template_name]['testTasks'] = False
+        # second template
+        template = {}
+        template_number = (key+1)*2
+        template_name = "template_" + str(template_number)
+        template_dict[template_name] = template # dictionariet får ett tomt dictionary
+        sheet_list = []
+        for klass in indata[key][0]:
+            k = "Klass " + klass + " - Diagnoser"
+            sheet_list.append(k)
+
+        template_dict[template_name]['sheets'] = sheet_list
+        template_dict[template_name]['header'] = headers[key][1]
+        template_dict[template_name]['tests'] = indata[key][1]
+        template_dict[template_name]['columns'] = get_columns_list(True, indata[key][1])
+        template_dict[template_name]['generateClass'] = True
+        template_dict[template_name]['testTasks'] = True
+
+    return template_dict
+
+template_dict = generate_template_dict(indata, headers)
+print("TEMPLATE_DICT")
+# pp.pprint(template_dict)
+
 # Collecting the different templates in template_dict:dictionary
-template_dict = {
-    "template_1": {
-        "sheets": ["Klass 7A", "Klass 7B", "Klass 7C"],
-        "header": HEADER_1,
-        "tests": TESTS_1,
-        "columns": get_columns_list(False, TESTS_1),
-        "generateClass": True,
-        "testTasks": False
-    },
-    "template_2": {
-        "sheets": ["Klass 7A - Diagnoser", "Klass 7B - Diagnoser", "Klass 7C - Diagnoser"],
-        "header": HEADER_2,
-        "tests": TESTS_1,
-        "columns": get_columns_list(True, TESTS_1),
-        "generateClass": True,
-        "testTasks": True
-    },
-    "template_3": {
-        "sheets": ["Klass 8A", "Klass 8B", "Klass 8C"],
-        "header": HEADER_3,
-        "tests": TESTS_2,
-        "columns": get_columns_list(False, TESTS_2),
-        "generateClass": True,
-        "testTasks": False
-    },
-    "template_4": {
-        "sheets": ["Klass 8A - Diagnoser", "Klass 8B - Diagnoser", "Klass 8C - Diagnoser"],
-        "header": HEADER_4,
-        "tests": TESTS_2,
-        "columns": get_columns_list(True, TESTS_2),
-        "generateClass": True,
-        "testTasks": True
-    }
-}
+# template_dict = {
+#     "template_1": {
+#         "sheets": ["Klass 7A", "Klass 7B", "Klass 7C"],
+#         "header": HEADER_1,
+#         "tests": TESTS_1,
+#         "columns": get_columns_list(False, TESTS_1),
+#         "generateClass": True,
+#         "testTasks": False
+#     },
+#     "template_2": {
+#         "sheets": ["Klass 7A - Diagnoser", "Klass 7B - Diagnoser", "Klass 7C - Diagnoser"],
+#         "header": HEADER_2,
+#         "tests": TESTS_1,
+#         "columns": get_columns_list(True, TESTS_1),
+#         "generateClass": True,
+#         "testTasks": True
+#     },
+#     "template_3": {
+#         "sheets": ["Klass 8A", "Klass 8B", "Klass 8C"],
+#         "header": HEADER_3,
+#         "tests": TESTS_2,
+#         "columns": get_columns_list(False, TESTS_2),
+#         "generateClass": True,
+#         "testTasks": False
+#     },
+#     "template_4": {
+#         "sheets": ["Klass 8A - Diagnoser", "Klass 8B - Diagnoser", "Klass 8C - Diagnoser"],
+#         "header": HEADER_4,
+#         "tests": TESTS_2,
+#         "columns": get_columns_list(True, TESTS_2),
+#         "generateClass": True,
+#         "testTasks": True
+#     }
+# }
 
 sheet_template = {}
 for template in template_dict.keys():
@@ -186,6 +295,36 @@ tabcolor = {
         "red": 1.0,
         "green": 0.2,
         "blue": 0.2
+    },
+    "Klass 9A": {
+        "red": 0.4,
+        "green": 0.3,
+        "blue": 1.0
+    },
+    "Klass 9A - Diagnoser": {
+        "red": 0.4,
+        "green": 0.3,
+        "blue": 1.0
+    },
+    "Klass 9B": {
+        "red": 0.4,
+        "green": 0.8,
+        "blue": 0.4
+    },
+    "Klass 9B - Diagnoser": {
+        "red": 0.4,
+        "green": 0.8,
+        "blue": 0.4
+    },
+    "Klass 9C": {
+        "red": 1.0,
+        "green": 0.2,
+        "blue": 0.2
+    },
+    "Klass 9C - Diagnoser": {
+        "red": 1.0,
+        "green": 0.2,
+        "blue": 0.2
     }
 }
 
@@ -202,23 +341,23 @@ sheet_objects[0] = {
             "fields": "title"
         }
 }
-sheet_objects[1] = {
-    "updateSheetProperties": {
-        "properties": {
-            "sheetId": 0,
-            "tabColor": tabcolor[sheet_names[0]]
-        },
-        "fields": "tabColor"
-    }
-}
+# sheet_objects[1] = {
+#     "updateSheetProperties": {
+#         "properties": {
+#             "sheetId": 0,
+#             "tabColor": tabcolor[sheet_names[0]]
+#         },
+#         "fields": "tabColor"
+#     }
+# }
 
 for i, sheet in enumerate(sheet_names[1:]):
     # Add new sheet tabs
     sheet_objects[i+2] = {
         "addSheet": {
             "properties": {
-                "title": sheet,
-                "tabColor": tabcolor[sheet_names[i+1]]
+                "title": sheet
+                # "tabColor": tabcolor[sheet_names[i+1]]
             }
         }
     }

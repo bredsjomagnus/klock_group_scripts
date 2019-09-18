@@ -239,7 +239,9 @@ def add_content(service, SPREADSHEET_ID, sheet_dict):
             elever_namn = klass_df.loc[:,'Elev Namn'].tolist()
 
             # Collect SVA students and put there names in a list
-            elever_sva = klass_df[klass_df['Elev Grupper'].str.contains('SVA')]
+
+            #### OBS ÄVEN MODERSMÅL ####
+            elever_sva = klass_df[klass_df['Elev Grupper'].str.contains('SVA') | klass_df['Elev Grupper'].str.contains('Modersmål')]
             elever_sva = elever_sva.loc[:, 'Elev Namn'].tolist()
 
             # Collect personnummer and determine gender
