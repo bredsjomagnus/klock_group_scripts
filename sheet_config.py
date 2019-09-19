@@ -1,28 +1,62 @@
 from diamant_test_config import *
 import pprint
 pp = pprint.PrettyPrinter(indent=2)
-SPREADSHEET_TITLE = "API genereated DIAMANT DOC"
-YEAR = "19/20"
-TERMIN = "HT"
-HEADER_TEMPLATE = [
-            ["Klass", YEAR, TERMIN],
-            ["", "", ""],
-            ["Elev", "SVA", "Kön"],
-        ]
-indata = {
-    0: [
-        ["4A", "4B", "4C", "4D"],
-        ["ag4", "as1", "as2"]
-    ],
-    1: [
-        ["5A", "5B", "5C", "5D"],
-        ["ag6", "ag8", "ag9", "mti1", "mti2"]
-    ],
-    2: [
-        ["6A", "6B", "6C", "6D"],
-        ["ag6", "as9", "rd1", "rd2"]
-    ]
-}
+
+SPREADSHEET_TITLE = "not set"
+YEAR = "not set"
+TERMIN = "not set"
+indata = {}
+
+datafile = open("data.txt", "r")
+indata_index = 0
+for line in datafile:
+    print(line)
+    linelist = line.split('=')
+    linelist = list(map(str.strip, linelist))
+    print(linelist)
+    if linelist[0] == 'TITLE':
+        print("SPREADSHEET_TITLE IS SET")
+        SPREADSHEET_TITLE = linelist[1]
+    elif linelist[0] == 'YEAR':
+        YEAR = linelist[1]
+    elif linelist[0] == 'TERMIN':
+        TERMIN = linelist[1]
+    elif linelist[0] == 'INDATA':
+        klasslist = linelist[1].split(';')
+        klasser = klasslist[0].split(",")
+        diagnoser = klasslist[1].split(",")
+        indata[indata_index] = [klasser, diagnoser]
+        indata_index += 1
+
+print(indata)
+# SPREADSHEET_TITLE = "API generarad diamantdiagnos"
+# YEAR = "19/20"
+# TERMIN = "VT"
+# HEADER_TEMPLATE = [
+#             ["Klass", YEAR, TERMIN],
+#             ["", "", ""],
+#             ["Elev", "SVA", "Kön"],
+#         ]
+# indata = {
+#     0: [
+#         ["4A", "4B", "4C", "4D"],
+#         ["ag4", "as1", "as2"]
+#     ],
+#     1: [
+#         ["5A", "5B", "5C", "5D"],
+#         ["ag6", "ag8", "ag9", "mti1", "mti2"]
+#     ],
+#     2: [
+#         ["6A", "6B", "6C", "6D"],
+#         ["ag6", "as9", "rd1", "rd2"]
+#     ]
+# }
+# indata = {
+#     0: [
+#         ["7A"],
+#         ["mti1"]
+#     ]
+# }
 
 
 
@@ -35,7 +69,7 @@ def get_sheet_names(indata):
     print(sheet_names)
     return sheet_names
 
-def generate_header(indata, HT, diamant_tests):
+def generate_header(indata, diamant_tests):
     headers = {}
     ####
     # header = {
@@ -52,14 +86,14 @@ def generate_header(indata, HT, diamant_tests):
 
     for key, value in indata.items():
         ht_template = [
-            ["Klass", "19/20", "HT"],
+            ["Klass", YEAR, TERMIN],
             ["", "", ""],
             ["Elev", "SVA", "Kön"],
         ]
         h0 = {}
         headers[key] = h0
         headers[key][1] = [
-            ["Klass", "19/20", "HT"],
+            ["Klass", YEAR, TERMIN],
             ["", "", ""],
             ["Elev", "SVA", "Kön"],
         ]
@@ -78,7 +112,7 @@ def generate_header(indata, HT, diamant_tests):
 
 sheet_names = get_sheet_names(indata)
 
-headers = generate_header(indata, HEADER_TEMPLATE.copy(), diamant_tests)
+headers = generate_header(indata, diamant_tests)
 pp.pprint(headers)
 
 # TESTS_1 = ["tae1", "rb4", "rb5"]
