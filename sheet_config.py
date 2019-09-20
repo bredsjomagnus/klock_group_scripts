@@ -106,51 +106,10 @@ def generate_header(indata, diamant_tests):
         headers[key][0] = ht_template
 
     return headers
-            
-
-
 
 sheet_names = get_sheet_names(indata)
 
 headers = generate_header(indata, diamant_tests)
-pp.pprint(headers)
-
-# TESTS_1 = ["tae1", "rb4", "rb5"]
-# TESTS_2 = ["rb4", "rb5"]
-# HEADER_1 = [
-#             ["Klass", "", "19/20", "HT", "", "Diagram"],
-#             ["", "", ""],
-#             ["Elev", "SVA", "Kön"],
-#         ]
-# HEADER_2 = [
-#             ["Klass", "19/20", "HT"],
-#             ["", "", ""],
-#             ["Elev", "SVA", "Kön"],
-#         ]
-# HEADER_3 = [
-#             ["Klass", "", "19/20", "HT", "", "Diagram"],
-#             ["", "", ""],
-#             ["Elev", "SVA", "Kön"],
-#         ]
-# HEADER_4 = [
-#             ["Klass", "19/20", "HT"],
-#             ["", "", ""],
-#             ["Elev", "SVA", "Kön"],
-#         ]
-
-# for i, test in enumerate(TESTS_1):
-#     test_name = [diamant_tests[test]['name']]
-#     test_number = str(i + 1)
-#     HEADER_1[1].extend(test_name)
-#     HEADER_1[2].extend(["Test " + test_number])
-
-# for i, test in enumerate(TESTS_2):
-#     test_name = [diamant_tests[test]['name']]
-#     test_number = str(i +1)
-#     HEADER_3[1].extend(test_name)
-#     HEADER_3[2].extend(["Test " + test_number])
-
-# print(HEADER_1)
 
 def get_columns_list(test_tasks, test_list):
     columns_list = []
@@ -185,12 +144,13 @@ def generate_template_dict(indata, headers):
    
     for key, value in indata.items():
         template = {}
-        template_number = (key+1)*2-1
+        template_number = (key+1)*2-1           # Calculate correct template_dict index (0,1,2,3,...)
         template_name = "template_" + str(template_number)
         template_dict[template_name] = template # dictionariet får ett tomt dictionary
-        # first template
+        
+        # FIRST TEMPLATE
         sheet_list = []
-        for klass in indata[key][0]:
+        for klass in indata[key][0]:        # Append "Klass " + XX to sheet name
             k = "Klass " + klass
             sheet_list.append(k)
 
@@ -200,13 +160,15 @@ def generate_template_dict(indata, headers):
         template_dict[template_name]['columns'] = get_columns_list(False, indata[key][1])
         template_dict[template_name]['generateClass'] = True
         template_dict[template_name]['testTasks'] = False
-        # second template
+        
+        # SECOND TEMPLATE
         template = {}
-        template_number = (key+1)*2
+        template_number = (key+1)*2             # Calculate correct template_dict index (0,1,2,3,...)
         template_name = "template_" + str(template_number)
         template_dict[template_name] = template # dictionariet får ett tomt dictionary
+
         sheet_list = []
-        for klass in indata[key][0]:
+        for klass in indata[key][0]:        # Append "Klass " + XX + " - Diagnoser" to sheet name
             k = "Klass " + klass + " - Diagnoser"
             sheet_list.append(k)
 
@@ -219,10 +181,9 @@ def generate_template_dict(indata, headers):
 
     return template_dict
 
-template_dict = generate_template_dict(indata, headers)
-print("TEMPLATE_DICT")
-# pp.pprint(template_dict)
-
+####################################
+#   TEMPLATE_DICT
+####################################
 # Collecting the different templates in template_dict:dictionary
 # template_dict = {
 #     "template_1": {
@@ -240,32 +201,14 @@ print("TEMPLATE_DICT")
 #         "columns": get_columns_list(True, TESTS_1),
 #         "generateClass": True,
 #         "testTasks": True
-#     },
-#     "template_3": {
-#         "sheets": ["Klass 8A", "Klass 8B", "Klass 8C"],
-#         "header": HEADER_3,
-#         "tests": TESTS_2,
-#         "columns": get_columns_list(False, TESTS_2),
-#         "generateClass": True,
-#         "testTasks": False
-#     },
-#     "template_4": {
-#         "sheets": ["Klass 8A - Diagnoser", "Klass 8B - Diagnoser", "Klass 8C - Diagnoser"],
-#         "header": HEADER_4,
-#         "tests": TESTS_2,
-#         "columns": get_columns_list(True, TESTS_2),
-#         "generateClass": True,
-#         "testTasks": True
 #     }
-# }
+####################################
+template_dict = generate_template_dict(indata, headers)
 
 sheet_template = {}
 for template in template_dict.keys():
-    # print(template)
     for sheet in template_dict[template]["sheets"]:
         sheet_template[sheet] = template
-
-# pp.pprint(sheet_template)
 
 
 
@@ -433,10 +376,7 @@ def generate_columns_update_object(sheet_dict):
         sheet_id = value
         template = sheet_template[sheet_name]
         columns_template = template_dict[template]['columns']
-        # if sheet_name in template_dict['template_1']['sheets']:
-        #     columns_template = template_dict['template_1']['columns']
-        # else:
-        #     columns_template = template_dict['template_2']['columns']
+
         for i, width in enumerate(columns_template):
             columns[list_index] = {
                 "updateDimensionProperties": {

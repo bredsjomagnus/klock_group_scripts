@@ -13,19 +13,16 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 
+# Config PrettyPrinter
 pp = pprint.PrettyPrinter(indent=2)
+
+
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
-
-# The ID and range of a sample spreadsheet.
-# SAMPLE_SPREADSHEET_ID = SHEET_TO_UPDATE_ID
-# SAMPLE_RANGE_NAME = 'Blad1!A1:B'
 
 # Placeholders for soon to be created spreadsheet
 spreadsheet = {}
 SPREADSHEET_ID = ""
-
-# FILENAME = 'elevnamn_till_elevmail_TEST.csv'
 def authenticate():
     creds = None
     # The file token.pickle stores the user's access and refresh tokens, and is
@@ -109,7 +106,6 @@ def get_sheet_ids(service, SPREADSHEET_ID):
     Getting the proporites of the created sheets.
     """
     print("Getting sheet proporties...")
-    # sheet_ids = []
     sheet_dict = {}
     # Trying to get sheetIds
     try:
@@ -117,13 +113,9 @@ def get_sheet_ids(service, SPREADSHEET_ID):
         request = service.spreadsheets().get(spreadsheetId=SPREADSHEET_ID, fields=fields)
         response = request.execute()
 
-        # TODO: Change code below to process the `response` dict:
-        # pp.pprint(response)
-        
         # How to iterate the response and get title of a sheet
         for prop in response['sheets']:
-            print(prop['properties']['title'])
-            # sheet_ids.append(prop['properties']['sheetId'])
+            # print(prop['properties']['title'])
             sheet_dict[prop['properties']['title']] = prop['properties']['sheetId']
     except Exception as e:
         print("While trying spreadsheets().get() error: ", e)
@@ -193,7 +185,6 @@ def add_content(service, SPREADSHEET_ID, sheet_dict):
             }
             # use append to add rows and update to overwrite
             response = service.spreadsheets().values().update(spreadsheetId=SPREADSHEET_ID, range=range, body=resource, valueInputOption="USER_ENTERED").execute()
-            # print("appended value reponse: ", response)
         except Exception as e:
             print("While trying to append values error: ", e)
             sys.exit()
@@ -215,25 +206,22 @@ def add_content(service, SPREADSHEET_ID, sheet_dict):
                 }
                 # use append to add rows and update to overwrite
                 response = service.spreadsheets().values().update(spreadsheetId=SPREADSHEET_ID, range=range, body=resource, valueInputOption="USER_ENTERED").execute()
-                # print("appended value reponse: ", response)
             except Exception as e:
                 print("While trying to append values error: ", e)
                 sys.exit()
 
         if template_dict[template]['generateClass']:
             df = pd.read_csv("elevlista.csv", index_col=False)
+
             # STUDENTS; NAME, SVA, GENDER
             re_object = re.search("(\s\d\w+)", sheet_name)
             klass = re_object.group().strip()
-            # print("sheet: %s, klass: %s" % (sheet, klass))
             klass_df = df[df['Elev Klass'].str.contains(klass)]
 
             # Collect students names
             elever_namn = klass_df.loc[:,'Elev Namn'].tolist()
 
             # Collect SVA students and put there names in a list
-
-            #### OBS ÄVEN MODERSMÅL ####
             elever_sva = klass_df[klass_df['Elev Grupper'].str.contains('SVA') | klass_df['Elev Grupper'].str.contains('Modersmål')]
             elever_sva = elever_sva.loc[:, 'Elev Namn'].tolist()
 
@@ -247,9 +235,7 @@ def add_content(service, SPREADSHEET_ID, sheet_dict):
                     elever_gender.append('Flicka')
                 else:
                     elever_gender.append('Pojke')
-
             content = []
-            # print("header", template_dict["template_1"]["header"])
             for i, namn in enumerate(elever_namn):
                 elev = []
                 elev.append(namn)
@@ -259,8 +245,7 @@ def add_content(service, SPREADSHEET_ID, sheet_dict):
                     elev.append('Nej')
                 elev.append(elever_gender[i])
                 content.append(elev)
-            # print("content", content)
-            # template_dict["template_1"]["header"] = template_dict["template_1"]["header"]
+
             klass_range = sheet_name + "!A4:F"
             try:
                 range = klass_range
@@ -270,7 +255,6 @@ def add_content(service, SPREADSHEET_ID, sheet_dict):
                 }
                 # use append to add rows and update to overwrite
                 response = service.spreadsheets().values().update(spreadsheetId=SPREADSHEET_ID, range=range, body=resource, valueInputOption="USER_ENTERED").execute()
-                # print("appended value reponse: ", response)
             except Exception as e:
                 print("While trying to append values error: ", e)
      
