@@ -1,6 +1,6 @@
 TITLE=API Diamant
 YEAR=19/20
 TERMIN=VT
-INDATA=4A,4B,4C,4D;ag6,ag8,ag9,mti1,mlä1
-INDATA=5A,5B,5C,5D;as5,as6,mti3,rb1,mlä2,mar3
-INDATA=6A,6B,6C,6D;mma2,mlä3,mvo3
+INDATA=4A,4B,4C,4D;ag6,ag8,ag9,mti1,mlae1
+INDATA=5A,5B,5C,5D;as5,as6,mti3,rb1,mlae2,mar3
+INDATA=6A,6B,6C,6D;mma2,mlae3,mvo3
