@@ -1,9 +1,23 @@
+from __future__ import print_function
 import pandas as pd
 from config import *
 import datetime
 import os
 import sys
 import getopt
+import pickle
+import os.path
+from env import *
+from googleapiclient.discovery import build
+from google_auth_oauthlib.flow import InstalledAppFlow
+from google.auth.transport.requests import Request
+
+
+# If modifying these scopes, delete the file token.pickle.
+SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
+# The ID and range of a sample spreadsheet.
+SAMPLE_SPREADSHEET_ID = SHEET_ID
+
 
 HELPMSG = """
 klock_grupper reads csv downloaded from Infomentor with students name and
@@ -37,6 +51,79 @@ options = ['-h', '--help']
 
 print("Beginning process...")
 print()
+
+def authenticate():
+    creds = None
+    # The file token.pickle stores the user's access and refresh tokens, and is
+    # created automatically when the authorization flow completes for the first
+    # time.
+    if os.path.exists('token.pickle'):
+        with open('token.pickle', 'rb') as token:
+            creds = pickle.load(token)
+    # If there are no (valid) credentials available, let the user log in.
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file(
+                'credentials.json', SCOPES)
+            creds = flow.run_local_server(port=0)
+        # Save the credentials for the next run
+        with open('token.pickle', 'wb') as token:
+            pickle.dump(creds, token)
+
+    service = build('sheets', 'v4', credentials=creds)
+
+    return service
+
+def update_elevnamn_till_elevmail(service, elevlist_file_name):
+    SAMPLE_RANGE_NAME = 'elevlista!A1:D'
+    FILENAME = elevlist_file_name
+
+
+     # Call the Sheets API
+    sheet = service.spreadsheets()
+    result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID,
+                                range=SAMPLE_RANGE_NAME).execute()
+    values = result.get('values', [])
+
+    if not values:
+        print('No data found.')
+    else:
+        print('Läser in elevnamn_till_elevmail från Driven:')
+        klasser = []
+        names = []
+        groups = []
+        emails = []
+        # print(values)
+        for i, row in enumerate(values):
+            if i > 0:
+                # Print columns A and E, which correspond to indices 0 and 4.
+                try: # this will take care of eventually empty cells.
+                    # name = "\""+row[0]+"\""
+                    klass = row[0]
+                    name = row[1]
+                    group = row[2]
+                    email = row[3]
+                    # print('%s, %s' % (name, email))
+                    klasser.append(klass)
+                    names.append(name)
+                    groups.append(group)
+                    emails.append(email)
+                except Exception as e:
+                    print()
+                    print("While reading rows from file error ->", e)
+                    print("Null at ", row[1])
+                    print()
+        print("Skapar DataFrame och sparar som %s" % (FILENAME))
+        elevlista_dict = {
+            'Elev Klass': klasser,
+            'Elev Namn': names,
+            'Elev Grupper': groups,
+            'Elev Mail': emails
+        }
+        elevlista_df = pd.DataFrame.from_dict(elevlista_dict)
+        elevlista_df.to_csv(FILENAME, sep=",", index=False)
 
 
 def createfile(new_df, group_file_name, group_name, message):
@@ -93,29 +180,23 @@ for opt in opts:
 print("## Looking for the essential files ##")
 
 # csv file needed as argument
-if len(args) == 0:
-    print("Correct use: $ python klock_grupper.py <csv-file>")
-    print("Need CSV-file")
-    print()
-    print("Type python --help klock_grupper.py, for help")
-    print()
-    print("FAILURE! Closing process...")
-    exit()
-else:
-    csvfile = args[0]
-
-
-try:
-    df = pd.read_csv(csvfile, sep=';', index_col=None).dropna() # read list from Infomentor
-    print("Found - '" + csvfile + "'")
-except:
-    print("Failed! Could not find file - '" + csvfile + "'")
-    print()
-    print("FAILURE! Closing process...")
-    exit()
+# if len(args) == 0:
+#     print("Correct use: $ python klock_grupper.py <csv-file>")
+#     print("Need CSV-file")
+#     print()
+#     print("Type python --help klock_grupper.py, for help")
+#     print()
+#     print("FAILURE! Closing process...")
+#     exit()
+# else:
+#     csvfile = args[0]
 
 try:
-    elevmail = pd.read_csv('elevnamn_till_elevmail.csv').dropna() # read reference list with names and corresponding emails
+    time_stamp = str(datetime.datetime.now())[:10] # 2019-09-04
+    elevlist_file_name = time_stamp + '_elevlista.csv'
+    service = authenticate()
+    update_elevnamn_till_elevmail(service, elevlist_file_name)
+    elevlista = pd.read_csv(elevlist_file_name).dropna() # read reference list with names and corresponding emails
     print("Found - 'elevnamn_till_elevmail.csv'")
 except:
     print("Failed! Could not find - 'elevnamn_till_elevmail.csv'")
@@ -123,6 +204,19 @@ except:
     print()
     print("FAILURE! Closing process...")
     exit()
+
+# try:
+#     df = elevmail
+#     # df = pd.read_csv(csvfile, sep=';', index_col=None).dropna() # read list from Infomentor
+#     # print("Found - '" + csvfile + "'")
+# except:
+#     # print("Failed! Could not find file - '" + csvfile + "'")
+#     print()
+#     print("FAILURE! Closing process...")
+#     exit()
+
+
+
 counter = 0     # Counter for number of group.csv files created
 for year in arskurser:          # year: 7,...
     folder = 'year_'+year+'_files/' # the folder to save the .csv in
@@ -130,19 +224,19 @@ for year in arskurser:          # year: 7,...
     print("folder: " + folder)
     for key in grupper:                 # key: no,...
         for group in grupper[key]:            # group: abcno-1, abcno-2, abcno-3,...
-            group_name = year + group                       # the correct group name
-            group_email = group_name.lower() + email_tail    # the groups email address
+            group_name = year + group                       # the correct group name 7abcno-1, 7abcno-2,...
+            group_email = group_name.lower() + email_tail    # the groups email address 7abcno-1@edu.he.....
 
-            group_file_name = os.path.join(dirname, folder + group_name+".csv")
+            group_file_name = os.path.join(dirname, folder + group_name+".csv") #/year_7_files/7abcno-1.csv
             
-            group_name_df = df[df['Elev Grupper'].str.contains(group_name)]                 # Ny dataframe med alla elever som är med i gruppen (groupname)
-            merged_df = pd.merge(elevmail, group_name_df, on=['Elev Namn'], how='inner')    # lägger samman dataframsen med avseende på elevnamnet
+            group_df = elevlista[elevlista['Elev Grupper'].str.contains(group_name)]                # Ny dataframe med alla elever som är med i gruppen (groupname)
+            # merged_df = pd.merge(elevmail, group_name_df, on=['Elev Namn'], how='inner')          # lägger samman dataframsen med avseende på elevnamnet
 
-            group_size = len(merged_df.index)       # number of rows in merged dataframe
+            group_size = len(group_df.index)       # number of rows in merged dataframe
 
             # composing the columns in the csv file to be
             group_email_column = [group_email] * group_size             # Group Email
-            member_email_column = merged_df['Elev Mail'].tolist()       # Member Email
+            member_email_column = group_df['Elev Mail'].tolist()        # Member Email
             member_type_column = ['USER'] * group_size                  # Member Type
             member_role_column = ['MEMBER'] * group_size                # Member Role
 

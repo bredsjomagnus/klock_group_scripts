@@ -12,9 +12,9 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 
 # The ID and range of a sample spreadsheet.
 SAMPLE_SPREADSHEET_ID = SHEET_ID
-SAMPLE_RANGE_NAME = 'elevlista!B1:C'
+SAMPLE_RANGE_NAME = 'elevlista!A1:D'
 
-FILENAME = 'elevnamn_till_elevmail_TEST.csv'
+FILENAME = 'elevnamn_till_elevmail.csv'
 
 def main():
     """Shows basic usage of the Sheets API.
@@ -51,23 +51,37 @@ def main():
         print('No data found.')
     else:
         print('Läser in elevnamn_till_elevmail från Driven:')
+        klasser = []
         names = []
+        groups = []
         emails = []
         for i, row in enumerate(values):
             if i > 0:
+                print(len(row))
                 # Print columns A and E, which correspond to indices 0 and 4.
                 try: # this will take care of eventually empty cells.
                     # name = "\""+row[0]+"\""
-                    name = row[0]
-                    email = row[1]
+                   
+                    klass = row[0]
+                    name = row[1]
+                    group = row[2]
+                    email = row[3]
+                    print(klass)
+                    print(name)
+                    print(group)
+                    print(email)
                     # print('%s, %s' % (name, email))
+                    klasser.append(klass)
                     names.append(name)
+                    groups.append(group)
                     emails.append(email)
                 except Exception as e:
                     print("While reading rows from file error ->", e)
         print("Skapar DataFrame och sparar som %s" % (FILENAME))
         elevlista_dict = {
+            'Elev Klass': klasser,
             'Elev Namn': names,
+            'Elev Grupper': groups,
             'Elev Mail': emails
         }
         elevlista_df = pd.DataFrame.from_dict(elevlista_dict)
