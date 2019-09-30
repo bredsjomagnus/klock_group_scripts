@@ -77,8 +77,10 @@ def authenticate():
     return service
 
 def update_elevnamn_till_elevmail(service, elevlist_file_name):
-    SAMPLE_RANGE_NAME = 'elevlista!A1:D'
+    SAMPLE_RANGE_NAME = 'elevlista!A1:E'
     FILENAME = elevlist_file_name
+    nan_counter = 0
+    elev_counter = 0
 
 
      # Call the Sheets API
@@ -90,7 +92,7 @@ def update_elevnamn_till_elevmail(service, elevlist_file_name):
     if not values:
         print('No data found.')
     else:
-        print('Läser in elevnamn_till_elevmail från Driven:')
+        print('Läser in elevnamn_till_elevmail från Driven: ', end="")
         klasser = []
         names = []
         groups = []
@@ -104,17 +106,19 @@ def update_elevnamn_till_elevmail(service, elevlist_file_name):
                     klass = row[0]
                     name = row[1]
                     group = row[2]
-                    email = row[3]
+                    email = row[4]
                     # print('%s, %s' % (name, email))
                     klasser.append(klass)
                     names.append(name)
                     groups.append(group)
                     emails.append(email)
+                    elev_counter += 1
                 except Exception as e:
-                    print()
-                    print("While reading rows from file error ->", e)
-                    print("Null at ", row[1])
-                    print()
+                    nan_counter += 1
+                    # print("While reading rows from file error ->", e)
+                    # print("Null at ", row[1])
+        print("%d valid rows and %d nan values" % (elev_counter, nan_counter))
+        print()
         print("Skapar DataFrame och sparar som %s" % (FILENAME))
         elevlista_dict = {
             'Elev Klass': klasser,
@@ -124,6 +128,7 @@ def update_elevnamn_till_elevmail(service, elevlist_file_name):
         }
         elevlista_df = pd.DataFrame.from_dict(elevlista_dict)
         elevlista_df.to_csv(FILENAME, sep=",", index=False)
+        
 
 
 def createfile(new_df, group_file_name, group_name, message):
