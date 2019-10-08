@@ -138,7 +138,16 @@ def createfile(new_df, group_file_name, group_name, message):
     """
     print()
     print(message)
-    new_df.to_csv(group_file_name, sep=",", index=False)    # csv from dataframe
+    new_df.to_csv(group_file_name, sep=",", index=False)    # dataframe to csv
+
+def create_excel_file(new_df, group_file_name, group_name, message):
+    """
+    Saves the new dataframe to csv-file in corresponding folder
+    ex year_7_files/7ABCNO-1.csv
+    """
+    print()
+    print(message)
+    new_df.to_excel(group_file_name, index=False)    # df to excel
 
 def log_difference(new_df, old_df, group_name):
     """
@@ -225,6 +234,7 @@ except:
 counter = 0     # Counter for number of group.csv files created
 for year in arskurser:          # year: 7,...
     folder = 'year_'+year+'_files/' # the folder to save the .csv in
+    drive_folder = 'grupper_åk_'+year+'/'
     print()
     print("folder: " + folder)
     for key in grupper:                 # key: no,...
@@ -233,6 +243,7 @@ for year in arskurser:          # year: 7,...
             group_email = group_name.lower() + email_tail    # the groups email address 7abcno-1@edu.he.....
 
             group_file_name = os.path.join(dirname, folder + group_name+".csv") #/year_7_files/7abcno-1.csv
+            drive_file_name = os.path.join(dirname, drive_folder + group_name+".xlsx")
             
             group_df = elevlista[elevlista['Elev Grupper'].str.contains(group_name)]                # Ny dataframe med alla elever som är med i gruppen (groupname)
             # merged_df = pd.merge(elevmail, group_name_df, on=['Elev Namn'], how='inner')          # lägger samman dataframsen med avseende på elevnamnet
@@ -252,7 +263,17 @@ for year in arskurser:          # year: 7,...
                 'Member Role': member_role_column
             }
 
+            drive_dict = {
+                'Grupp': [group_name] * group_size,
+                'Klass': group_df['Elev Klass'].tolist(),
+                'Namn':  group_df['Elev Namn'].tolist()
+            }
+
             new_df = pd.DataFrame.from_dict(group_dict)               # dataframe from created dict: group_dict
+
+            drive_df = pd.DataFrame.from_dict(drive_dict)             # dataframe from created dict: drive_dict
+
+            # print(drive_df)
 
             if len(new_df.index) > 0:   # if new_df contains rows
                 if os.path.exists(group_file_name): # check if this csv already exists
@@ -268,8 +289,13 @@ for year in arskurser:          # year: 7,...
 
                 else:
                     message = group_name+".csv created!"
+                    drive_message = group_name+".xlsx created for drive!"
                     createfile(new_df, group_file_name, group_name, message)
+                    create_excel_file(drive_df, drive_file_name, group_name, drive_message)
                     counter += 1
+
+                    
+
             else:
                 empty_groups.append(group_name)
                 
