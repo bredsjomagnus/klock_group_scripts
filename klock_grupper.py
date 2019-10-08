@@ -241,17 +241,24 @@ except:
 counter = 0     # Counter for number of group.csv files created
 for year in arskurser:          # year: 7,...
     folder = 'year_'+year+'_files/'         # the folder to save the .csv in
-    drive_folder = 'grupper_åk_'+year+'/'   # the folder to save the .xlsx (drive files) in
+    excel_folder = 'grupper_åk_'+year+'/'   # the folder to save the .xlsx (drive files) in
+    no_prefix_folder = 'no_prefix/'
     print()
     print("folder: " + folder)
     for key in grupper:                 # key: no,...
         for group in grupper[key]:            # group: abcno-1, abcno-2, abcno-3,...
-            group_name = year + group                       # the correct group name 7abcno-1, 7abcno-2,...
+            if key is not 'no_prefix':
+                group_name = year + group                       # the correct group name 7abcno-1, 7abcno-2,...
+            else:
+                group_name = group
+
             group_email = group_name.lower() + email_tail    # the groups email address 7abcno-1@edu.he.....
 
 
             group_file_name = os.path.join(dirname, folder + group_name+".csv")         #/year_7_files/7abcno-1.csv
-            drive_file_name = os.path.join(dirname, drive_folder + group_name+".xlsx")  #/grupper_åk_7/7abcno-1.xlsx
+            excel_file_name = os.path.join(dirname, excel_folder + group_name+".xlsx")  #/grupper_åk_7/7abcno-1.xlsx
+            no_prefix_file_name = os.path.join(dirname, no_prefix_folder + group_name+".xlsx")  #/no_prefix/modersmål som F-3.xlsx
+
             
             group_df = elevlista[elevlista['Elev Grupper'].str.contains(group_name)]                # Ny dataframe med alla elever som är med i gruppen (groupname)
             # merged_df = pd.merge(elevmail, group_name_df, on=['Elev Namn'], how='inner')          # lägger samman dataframsen med avseende på elevnamnet
@@ -273,7 +280,7 @@ for year in arskurser:          # year: 7,...
             }
 
             # Dictionary for xlsx files that are puropsed for drive upload.
-            drive_dict = {
+            excel_dict = {
                 'Grupp': [group_name] * group_size,
                 'Klass': group_df['Elev Klass'].tolist(),
                 'Namn':  group_df['Elev Namn'].tolist()
@@ -281,7 +288,7 @@ for year in arskurser:          # year: 7,...
 
             new_df = pd.DataFrame.from_dict(group_dict)               # dataframe from created dict: group_dict
 
-            drive_df = pd.DataFrame.from_dict(drive_dict)             # dataframe from created dict: drive_dict
+            excel_df = pd.DataFrame.from_dict(excel_dict)             # dataframe from created dict: drive_dict
 
             # print(drive_df)
 
@@ -293,24 +300,30 @@ for year in arskurser:          # year: 7,...
                     
                     if not new_df.equals(old_df):   # compare if new_df is equal to new
                         message = log_difference(new_df, old_df, group_name)
-                        createfile(new_df, group_file_name, group_name, message)
+                        if key is not 'no_prefix':
+                            message = log_difference(new_df, old_df, group_name)
+                            createfile(new_df, group_file_name, group_name, message)
 
-                        # creating xlsx-files in 'grupper_åk_x/group_name'
-                        drive_message = group_name+".xlsx created for drive!"
-                        create_excel_file(drive_df, drive_file_name, group_name, drive_message)
-
+                            # creating xlsx-files in 'grupper_åk_x/group_name'
+                            excel_message = group_name+".xlsx created for drive!"
+                            create_excel_file(excel_df, excel_file_name, group_name, excel_message)
+                        else:
+                            create_excel_file(excel_df, no_prefix_file_name, group_name, excel_message)
                         counter += 1
                     else:
                         print(".", end="")
 
                 else:
-                    # creating csv-files in 'year_x_files/group_name'
-                    message = group_name+".csv created!"
-                    createfile(new_df, group_file_name, group_name, message)
+                    if key is not 'no_prefix':
+                        # creating csv-files in 'year_x_files/group_name'
+                        message = group_name+".csv created!"
+                        createfile(new_df, group_file_name, group_name, message)
 
-                    # creating xlsx-files in 'grupper_åk_x/group_name'
-                    drive_message = group_name+".xlsx created for drive!"
-                    create_excel_file(drive_df, drive_file_name, group_name, drive_message)
+                        # creating xlsx-files in 'grupper_åk_x/group_name'
+                        excel_message = group_name+".xlsx created for drive!"   
+                        create_excel_file(excel_df, excel_file_name, group_name, excel_message)
+                    else:
+                        create_excel_file(excel_df, no_prefix_file_name, group_name, excel_message)
                     counter += 1
 
                     
