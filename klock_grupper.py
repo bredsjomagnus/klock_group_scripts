@@ -133,6 +133,7 @@ def update_elevnamn_till_elevmail(service, elevlist_file_name):
         }
         elevlista_df = pd.DataFrame.from_dict(elevlista_dict)
         elevlista_df.to_csv(FILENAME, sep=",", index=False)
+        print(elevlista_df)
         
 
 
@@ -284,7 +285,8 @@ for year in arskurser:          # year: 7,...
 
             # print(drive_df)
 
-            if len(new_df.index) > 0:   # if new_df contains rows
+            if len(new_df.index) > 0:   # if new_df contains rows   
+            
                 if os.path.exists(group_file_name): # check if this csv already exists
                     old_df = pd.read_csv(group_file_name)   # get old_df
 
@@ -292,6 +294,11 @@ for year in arskurser:          # year: 7,...
                     if not new_df.equals(old_df):   # compare if new_df is equal to new
                         message = log_difference(new_df, old_df, group_name)
                         createfile(new_df, group_file_name, group_name, message)
+
+                        # creating xlsx-files in 'grupper_åk_x/group_name'
+                        drive_message = group_name+".xlsx created for drive!"
+                        create_excel_file(drive_df, drive_file_name, group_name, drive_message)
+
                         counter += 1
                     else:
                         print(".", end="")

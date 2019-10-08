@@ -1,6 +1,6 @@
 # Används av klock_grupper.py för att plocka ut grupperna och eleverna i dessa grupper
 
-arskurser = ['7', '8', '9']
+arskurser = ['4', '5', '6', '7', '8', '9']
 
 email_tail = '@edu.hellefors.se'
 
