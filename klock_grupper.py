@@ -20,26 +20,34 @@ SAMPLE_SPREADSHEET_ID = SHEET_ID
 
 
 HELPMSG = """
-klock_grupper reads csv downloaded from Infomentor with students name and
-groups. Then create one csv-file for every group that can be used to
-create these groups in Google Admin Groups.
-
-To make this work there needs to be a reference csv with the students
-names and email addresses [elevnamn_till_elevmail.csv]
+klock_grupper reads 'elevlista' file on drive and save a copy of it in folder.
+The file is used to generate the students groups and save those groups both as .csv
+for mass upload purpose in Google Admin and as .xlsx for more readability to be
+uploaded to the Drive.
 
 USAGE
-$ python klock_grupper.py <csv-file>
-The csv-file needs to have semicolon as separator. But creates csv-files with comma as separator.
+$ python klock_grupper.py
 
-csv-file head example from Infomentor:
-Elev Grupper;Elev Namn;Elev Klass;Årskurs
-9ABCNO-2, 9CBL-1, 9CEN, 9CHKK-1, 9CIDH, 9CMU-1, 9CSL-1, 9CSO;last name, first name;9C;9
-...
+--------------------------------------------------------------------------------------------------------
 
-Then creates files like this:
-Group Email [Required],Member Email,Member Type,Member Role
-9cbl-1@edu.hellefors.se,firstname.lastname@edu.hellefors.se,USER,MEMBER
-...
+The file in the Drive ('elevlista') needs to have the columns; [Elev Klass, Elev Namn, Elev Grupper, Elev Mail]'
+
+--------------------------------------------------------------------------------------------------------
+
+The script creates files like this (.csv meant for mass uploading in Google Admin):
+Group Email [Required],     Member Email,                           Member Type,    Member Role
+9cbl-1@edu.hellefors.se,    firstname.lastname@edu.hellefors.se,    USER,           MEMBER
+
+And like this (.xlsx and meant readability and destined for the Drive):
+Grupp	Klass	Namn
+8CMU-1	8C      Abdi, Iman
+
+--------------------------------------------------------------------------------------------------------
+
+The script checks older files against new ones. If there is any difference a changelog file will be created in
+/changelogs/group.txt. The log will state if anything has been added and/or removed and what that change is.
+
+--------------------------------------------------------------------------------------------------------
 
 Options:
     -h or --help        Display this help message
@@ -48,9 +56,6 @@ Options:
 dirname = os.path.dirname(__file__)         # this directory
 empty_groups = []
 options = ['-h', '--help']
-
-print("Beginning process...")
-print()
 
 def authenticate():
     creds = None
@@ -142,12 +147,12 @@ def createfile(new_df, group_file_name, group_name, message):
 
 def create_excel_file(new_df, group_file_name, group_name, message):
     """
-    Saves the new dataframe to csv-file in corresponding folder
-    ex year_7_files/7ABCNO-1.csv
+    Saves the new dataframe to xlsx-file in corresponding folder
+    ex grupper_åk_7/7ABCNO-1.xlsx
     """
     print()
     print(message)
-    new_df.to_excel(group_file_name, index=False)    # df to excel
+    new_df.to_excel(group_file_name, index=False)    # dataframe to excel
 
 def log_difference(new_df, old_df, group_name):
     """
@@ -190,7 +195,8 @@ for opt in opts:
             if optvalue == '-h' or optvalue == '--help':
                 print(HELPMSG)
                 exit()
-
+print("Beginning process...")
+print()
 print("## Looking for the essential files ##")
 
 # csv file needed as argument
@@ -233,8 +239,8 @@ except:
 
 counter = 0     # Counter for number of group.csv files created
 for year in arskurser:          # year: 7,...
-    folder = 'year_'+year+'_files/' # the folder to save the .csv in
-    drive_folder = 'grupper_åk_'+year+'/'
+    folder = 'year_'+year+'_files/'         # the folder to save the .csv in
+    drive_folder = 'grupper_åk_'+year+'/'   # the folder to save the .xlsx (drive files) in
     print()
     print("folder: " + folder)
     for key in grupper:                 # key: no,...
@@ -242,8 +248,9 @@ for year in arskurser:          # year: 7,...
             group_name = year + group                       # the correct group name 7abcno-1, 7abcno-2,...
             group_email = group_name.lower() + email_tail    # the groups email address 7abcno-1@edu.he.....
 
-            group_file_name = os.path.join(dirname, folder + group_name+".csv") #/year_7_files/7abcno-1.csv
-            drive_file_name = os.path.join(dirname, drive_folder + group_name+".xlsx")
+
+            group_file_name = os.path.join(dirname, folder + group_name+".csv")         #/year_7_files/7abcno-1.csv
+            drive_file_name = os.path.join(dirname, drive_folder + group_name+".xlsx")  #/grupper_åk_7/7abcno-1.xlsx
             
             group_df = elevlista[elevlista['Elev Grupper'].str.contains(group_name)]                # Ny dataframe med alla elever som är med i gruppen (groupname)
             # merged_df = pd.merge(elevmail, group_name_df, on=['Elev Namn'], how='inner')          # lägger samman dataframsen med avseende på elevnamnet
@@ -256,6 +263,7 @@ for year in arskurser:          # year: 7,...
             member_type_column = ['USER'] * group_size                  # Member Type
             member_role_column = ['MEMBER'] * group_size                # Member Role
 
+            # Dictionary for csv-files that are purposed for massupload in Google Admin
             group_dict = {
                 'Group Email [Required]': group_email_column,
                 'Member Email': member_email_column,
@@ -263,6 +271,7 @@ for year in arskurser:          # year: 7,...
                 'Member Role': member_role_column
             }
 
+            # Dictionary for xlsx files that are puropsed for drive upload.
             drive_dict = {
                 'Grupp': [group_name] * group_size,
                 'Klass': group_df['Elev Klass'].tolist(),
@@ -288,9 +297,12 @@ for year in arskurser:          # year: 7,...
                         print(".", end="")
 
                 else:
+                    # creating csv-files in 'year_x_files/group_name'
                     message = group_name+".csv created!"
-                    drive_message = group_name+".xlsx created for drive!"
                     createfile(new_df, group_file_name, group_name, message)
+
+                    # creating xlsx-files in 'grupper_åk_x/group_name'
+                    drive_message = group_name+".xlsx created for drive!"
                     create_excel_file(drive_df, drive_file_name, group_name, drive_message)
                     counter += 1
 
