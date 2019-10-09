@@ -133,7 +133,7 @@ def update_elevnamn_till_elevmail(service, elevlist_file_name):
         }
         elevlista_df = pd.DataFrame.from_dict(elevlista_dict)
         elevlista_df.to_csv(FILENAME, sep=",", index=False)
-        print(elevlista_df)
+        # print(elevlista_df)
         
 
 
@@ -323,6 +323,7 @@ for year in arskurser:          # year: 7,...
                         excel_message = group_name+".xlsx created for drive!"   
                         create_excel_file(excel_df, excel_file_name, group_name, excel_message)
                     else:
+                        excel_message = group_name+".xlsx created for drive!" 
                         create_excel_file(excel_df, no_prefix_file_name, group_name, excel_message)
                     counter += 1
 
