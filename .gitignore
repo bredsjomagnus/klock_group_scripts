@@ -1,5 +1,10 @@
 __pycache__/
+__pycache__/*
 *.pyc
+.ipynb_checkpoints/
+.ipynb_checkpoints/*
+*.ipynb_checkpoints
+*.cpython-37.pyc
 Exempelkod/*
 year_4_files/
 year_5_files/

@@ -10,10 +10,10 @@ grupper = {
     'sv': ['ASV', 'BSV', 'CSV'],
     'sva': ['ABCSVA'],
     'no_prefix': ['ModersmålARA', 'Modersmål Som F-3', 'SOM 6-9', 'ModersmålNLD', 'Modersmål Dari', 'ModersmålSOM', 'Lilla Världen', 'Valhalla HT19'],
-    'sven': ['ABCDSVEN','ABCSVEN'],
+    'sven': ['ABCSVEN'],
     'bild': ['ABL-1', 'BBL-1', 'CBL-1', 'ABL-2', 'BBL-2', 'CBL-2'],
     'slöjd': ['ASL-1', 'BSL-1', 'CSL-1', 'ASL-2', 'BSL-2', 'CSL-2'],
-    'språk': ['ABCDSP', 'ABCSP', 'ABCSP-1', 'ABCSP-2', 'ABCDTY','ABCTY'],
+    'språk': ['ABCSP', 'ABCSP-1', 'ABCSP-2', 'ABCTY'],
     'hemkunskap': ['AHKK-1', 'AHKK-2', 'BHKK-1', 'BHKK-2', 'CHKK-1', 'CHKK-2'],
     'so': ['ASO', 'BSO', 'CSO'],
     'idrott': ['AIDH', 'BIDH', 'CIDH']
