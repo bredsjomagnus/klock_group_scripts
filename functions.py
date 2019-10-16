@@ -8,9 +8,19 @@ import getopt
 import pickle
 import os.path
 from env import *
+from termcolor import colored, cprint
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
+
+
+
+def error_report(error_list):
+    print()
+    cprint("     *ROWS MISSING IN ELEVLISTA:ELEVLISTA*", 'yellow', attrs=['bold'])
+    cprint("        Missing %d at:" % (len(error_list)), 'yellow')
+    for row_number in error_list:
+        cprint("        - row %d" % (row_number), 'yellow')
 
 def authenticate():
     creds = None
@@ -72,22 +82,19 @@ def get_elevlista_with_emails(service, ELEVLISTA_ID):
     if not values:
         print('No data found.')
     else:
-        print('Läser in elevnamn_till_elevmail från Driven: ', end="")
+        # print('Läser in elevnamn_till_elevmail från Driven: ', end="")
         klasser = []
         names = []
         groups = []
         emails = []
-        # print(values)
         for i, row in enumerate(values):
             if i > 0:
-                # Print columns A and E, which correspond to indices 0 and 4.
                 try: # this will take care of eventually empty cells.
-                    # name = "\""+row[0]+"\""
                     klass = row[0]
                     name = row[1]
                     group = row[2]
                     email = row[4]
-                    # print('%s, %s' % (name, email))
+
                     klasser.append(klass)
                     names.append(name)
                     groups.append(group)
@@ -95,8 +102,7 @@ def get_elevlista_with_emails(service, ELEVLISTA_ID):
                     elev_counter += 1
                 except Exception as e:
                     nan_counter += 1
-                    # print("While reading rows from file error ->", e)
-                    # print("Null at ", row[1])
+
         print("%d valid rows and %d nan values" % (elev_counter, nan_counter))
         print()
         elevlista_dict = {
@@ -113,7 +119,6 @@ def get_elevlista_without_mail(service, ELEVLISTA_ID):
     Get Infometor (elevlista) file in Drive and return it as a Dataframe
     """
     RANGE = 'elevlista!A1:D'
-    FILENAME = 'elevlista_check'
 
      # Call the Sheets API
     sheet = service.spreadsheets()
@@ -124,46 +129,30 @@ def get_elevlista_without_mail(service, ELEVLISTA_ID):
     if not values:
         print('No data found in elevlista.')
     else:
-        print('Läser in elevlista från Driven till Dataframe:')
+        error_list = []
+
         klasser = []
         personnummers = []
         names = []
         groups = []
-        
-        # emails = []
-        # print(values)
+
         for i, row in enumerate(values):
             if i > 0:
                 # Print columns A and E, which correspond to indices 0 and 4.
                 try: # this will take care of eventually empty cells.
-                    # name = "\""+row[0]+"\""
                     klass = row[0]
                     personnummer = str(row[3])
                     name = row[1]
                     group = row[2]
 
-                    # if len(personnummer) < 10:
-                    #     personnummer = "0" + personnummer
-                    # personnummer = personnummer.strip()
-                    # personnummer = personnummer[:6] + '-' + personnummer[-4:]
-
-                    # personnummer = personnummer.strip()
-                    
-                    # print(personnummer)
-                    # if len(personnummer) < 11:
-                    #     print("personnummer_pre: %s, personnummer_first: %s, personnummer: %s" % (personnummer_pre, personnummer_first, personnummer))
-                    #     print("personnummer_first[:6]: %s, personnummer_first[-4:]: %s" % (personnummer_first[:6],personnummer_first[-4:]))
                     klasser.append(klass)
                     personnummers.append(personnummer)
                     names.append(name)
                     groups.append(group)
                     # emails.append(email)
                 except Exception as e:
-                    print()
-                    print("While reading rows from file error ->", e)
-                    print("Null at ", row[1])
-                    print()
-        print("Skapar DataFrame och sparar som %s" % (FILENAME))
+                    error_list.append(i+1)
+
         elevlista_dict = {
             'Klass': klasser,
             'Namn': names,
@@ -171,9 +160,12 @@ def get_elevlista_without_mail(service, ELEVLISTA_ID):
             'Personnummer': personnummers,
         }
         df_elevlista = pd.DataFrame.from_dict(elevlista_dict)
-        # df_elevlista.to_csv(FILENAME, sep=",", index=False)
+    clear_range = 'elevlista!E2'
+    request = service.spreadsheets().values().clear(spreadsheetId=ELEVLISTA_ID, range=clear_range).execute()
 
-    return df_elevlista
+    return df_elevlista, error_list
+
+
 def get_edukonto_reference_list(service, ELEVLISTA_ID):
     """
     Get edukonto sheet file in Drive and return it as a Dataframe
@@ -190,43 +182,30 @@ def get_edukonto_reference_list(service, ELEVLISTA_ID):
     if not values:
         print('No data found in elevlista.')
     else:
-        print('Läser in elevlista från Driven till Dataframe:')
+        error_list = []
+
         klasser = []
         personnummers = []
         names = []
         emails = []
         for i, row in enumerate(values):
+            # print(".", end="")
+
             if i > 0:
                 # Print columns A and E, which correspond to indices 0 and 4.
                 try: # this will take care of eventually empty cells.
-                    # name = "\""+row[0]+"\""
                     klass = row[0]
                     personnummer = str(row[2])
                     name = row[1]
                     email = row[3]
 
-                    # if len(personnummer) < 10:
-                    #     personnummer = "0" + personnummer
-                    # personnummer = personnummer.strip()
-                    # personnummer = personnummer[:6] + '-' + personnummer[-4:]
-
-                    # personnummer = personnummer.strip()
-                    
-                    # print(personnummer)
-                    # if len(personnummer) < 11:
-                    #     print("personnummer_pre: %s, personnummer_first: %s, personnummer: %s" % (personnummer_pre, personnummer_first, personnummer))
-                    #     print("personnummer_first[:6]: %s, personnummer_first[-4:]: %s" % (personnummer_first[:6],personnummer_first[-4:]))
                     klasser.append(klass)
                     personnummers.append(personnummer)
                     names.append(name)
                     emails.append(email)
-                    # emails.append(email)
                 except Exception as e:
-                    print()
-                    print("While reading rows from file error ->", e)
-                    print("Null at ", row[1])
-                    print()
-        print("Skapar DataFrame och sparar som %s" % (FILENAME))
+                    error_list.append(i+1)
+
         edukonto_dict = {
             'Klass': klasser,
             'Namn': names,
@@ -234,9 +213,9 @@ def get_edukonto_reference_list(service, ELEVLISTA_ID):
             'Email': emails
         }
         df_edukonto = pd.DataFrame.from_dict(edukonto_dict)
-        # df_edukonto.to_csv(FILENAME, sep=",", index=False)
 
-    return df_edukonto
+    return df_edukonto, error_list
+
 def find_email(pn, name, df_edukonto):
     
     email = ""
@@ -246,12 +225,10 @@ def find_email(pn, name, df_edukonto):
         if len(edu_konto_series.index) == 1:
             email = str(edu_konto_series['Email'].values[0])
         else:
-            # print("Får gå på namnet istället")
             edu_konto_series = df_edukonto[df_edukonto['Namn'].str.contains(name)]
             if len(edu_konto_series.index) == 1:
                 email = str(edu_konto_series['Email'].values[0])
             else:
-                # print("Kunde varken hitta personnummer eller namn")
                 message = "KONTOT SAKNAS I EDUKONTO SHEET"
     except Exception as e:
         print("Error while looking for email in edukonto sheet ", e)
@@ -280,11 +257,12 @@ def check_mail(service, df_elevlista, df_edukonto, ELEVLISTA_ID):
             pass
         if message != "OK":
             if current_klass in relevent_classes:
-                print("%s %s SAKNAS I EDUKONTO SHEET" % (current_klass, current_name))
+                cprint("     %s %s SAKNAS I EDUKONTO SHEET" % (current_klass, current_name), 'yellow')
 
         row = [current_klass, current_name, current_groups, current_pn, email]   
         
         content.append(row)
+    print()
     sheet_range = "elevlista!A2"
     try:
         range = sheet_range
@@ -311,8 +289,6 @@ def create_excel_file(new_df, group_file_name, group_name, message):
     Saves the new dataframe to xlsx-file in corresponding folder
     ex grupper_åk_7/7ABCNO-1.xlsx
     """
-    # print()
-    # print(message)
     new_df.to_excel(group_file_name, index=False)    # dataframe to excel
 
 def log_difference(new_df, old_df, group_name):
@@ -401,7 +377,6 @@ def generate_groups(elevlista):
 
                 excel_df = pd.DataFrame.from_dict(excel_dict)             # dataframe from created dict: drive_dict
 
-                # print(drive_df)
 
                 if len(new_df.index) > 0:   # if new_df contains rows   
                 

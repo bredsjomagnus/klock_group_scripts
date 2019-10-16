@@ -9,6 +9,7 @@ import getopt
 import pickle
 import os.path
 from env import *
+from termcolor import colored, cprint
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
@@ -32,9 +33,30 @@ print()
 
 service = authenticate()
 
-df_elevlista = get_elevlista_without_mail(service, ELEVLISTA_ID)
-df_edukonto = get_edukonto_reference_list(service, ELEVLISTA_ID)
+
+df_elevlista, elevlist_errors = get_elevlista_without_mail(service, ELEVLISTA_ID)
+print("Reading 'elavlista:elevlista.")
+print("Clearing 'Elev Mail' column.")
+if len(elevlist_errors) > 0:
+    error_report(elevlist_errors)
+else:
+    print()
+    cprint("*** SUCCESS ***", 'green')
+
+print()
+
+df_edukonto, edulist_errors = get_edukonto_reference_list(service, ELEVLISTA_ID)
+print("Reading 'elevlista:edukonto.")
+if len(edulist_errors) == 0:
+    print()
+    cprint("*** SUCCESS ***", 'green')
+
 check_mail(service, df_elevlista, df_edukonto, ELEVLISTA_ID)
+print("Update elevlista:elevlista, email set.")
+
+print()
+print("### MAIL CLEARED AND CHECKED ###")
+print()
 cont = input("Vill du fortsätta j/n? ")
 if cont == "j":
     df_elevlista = get_elevlista_with_emails(service, ELEVLISTA_ID)
