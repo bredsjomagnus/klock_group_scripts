@@ -1,25 +1,28 @@
-# klock_group_scripts
+# GRUPPINDELNING KLOCKARHAGSSKOLAN
 
-klock_grupper reads csv downloaded from Infomentor with students name and
-groups. Then create one csv-file for every group that can be used to
-create these groups in Google Admin Groups.
+## PROCEDUR
+Exportera klass 1A-9C från Infomentor med följande kolumner i följande ordning:
 
-To make this work there needs to be a reference csv with the students
-names and email addresses [elevnamn_till_elevmail.csv]
+```[Elev Klass, Elev Namn, Elev Grupper, Elev Personnummer]```
 
-USAGE
-$ python klock_grupper.py csv-file
-The csv-file needs to have semicolon as separator. But creates csv-files with comma as separator.
+Öppna upp i Excel eller liknande och sortera raderna från A->Z.
 
-csv-file head example from Infomentor:
-Elev Grupper;Elev Namn;Elev Klass;Årskurs
-9ABCNO-2, 9CBL-1, 9CEN, 9CHKK-1, 9CIDH, 9CMU-1, 9CSL-1, 9CSO;last name, first name;9C;9
-...
+Klipp och klistra in i elevlista:elevlista
 
-Then creates files like this:
-Group Email [Required],Member Email,Member Type,Member Role
-groupmail@edu...,firstname.lastname@edu.hellefors.se,USER,MEMBER
-...
+Ta bort eventuella mail som finns under kolumnen ```Elev mail```.
 
-Options:
-    -h or --help        Display this help message
+Kör skriptet
+
+```$ python klock_gruppper```
+
+### SKRIPTET I TVÅ STEG
+
+#### FÖRST
+Skriptet ser till att rätt mail läggs till rätt elev via referensbladet elevlista:edukonto
+
+När det är klart frågas användaren om programmet skall fortsätta kolla gruppindelningen.
+
+#### ANDRA
+Väljer användaren att fortsätta med gruppindelningen generaras csv-filer för de olika grupperna beroende på vilka grupper som finns för eleven i ```Elev Grupper``` kolumnen. Detta med hjälp av ```config.py``` som 'talar om' vilka klasser och grupper som skall kollas upp och skapas.
+
+Det skapas samtidigt excelfiler med samma grupper för att snabbt kunna lägga upp dessa på driven.

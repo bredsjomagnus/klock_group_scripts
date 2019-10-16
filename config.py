@@ -2,6 +2,8 @@
 
 arskurser = ['4', '5', '6', '7', '8', '9']
 
+relevent_classes = ["4A", "4B", "4C", "4D", "5A", "5B", "5C", "5D", "6A", "6B", "6C", "6D", "7A", "7B", "7C", "8A", "8B", "8C", "9A", "9B", "9C"]
+
 email_tail = '@edu.hellefors.se'
 
 grupper = {

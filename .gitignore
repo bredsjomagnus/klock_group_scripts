@@ -28,3 +28,4 @@ changelogs/
 *.pickle
 *.exe
 env.py
+*.code-workspace
