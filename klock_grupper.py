@@ -47,9 +47,14 @@ print()
 
 df_edukonto, edulist_errors = get_edukonto_reference_list(service, ELEVLISTA_ID)
 print("Reading 'elevlista:edukonto.")
-if len(edulist_errors) == 0:
+if len(edulist_errors['row']) == 0:
     print()
     cprint("*** SUCCESS ***", 'green')
+else:
+    cprint("--- len(edulist_errors['row']) != 0 ---", 'red')
+    cprint("    TOTALLY %d ROWS IN ERROR LIST" % (len(edulist_errors['row'])), "yellow")
+    cprint("    edulist_errors: %s " % (edulist_errors), 'yellow')
+    print()
 
 check_mail(service, df_elevlista, df_edukonto, ELEVLISTA_ID)
 print("Update elevlista:elevlista, email set.")

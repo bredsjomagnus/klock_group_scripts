@@ -182,7 +182,9 @@ def get_edukonto_reference_list(service, ELEVLISTA_ID):
     if not values:
         print('No data found in elevlista.')
     else:
-        error_list = []
+        error_list = {
+            "row": []
+        }
 
         klasser = []
         personnummers = []
@@ -204,7 +206,8 @@ def get_edukonto_reference_list(service, ELEVLISTA_ID):
                     names.append(name)
                     emails.append(email)
                 except Exception as e:
-                    error_list.append(i+1)
+                    row = [i+1]
+                    error_list['row'].extend(row)
 
         edukonto_dict = {
             'Klass': klasser,
