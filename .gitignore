@@ -9,6 +9,9 @@ __pycache__/*
 *.ipynb_checkpoints
 *.cpython-37.pyc
 Exempelkod/*
+year_1_files/
+year_2_files/
+year_3_files/
 year_4_files/
 year_5_files/
 year_6_files/
@@ -16,6 +19,9 @@ year_7_files/
 year_8_files/
 year_9_files/
 no_prefix/
+grupper_åk_1/
+grupper_åk_2/
+grupper_åk_3/
 grupper_åk_4/
 grupper_åk_5/
 grupper_åk_6/

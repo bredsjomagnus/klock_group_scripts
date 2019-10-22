@@ -1,8 +1,8 @@
 # Används av klock_grupper.py för att plocka ut grupperna och eleverna i dessa grupper
 
-arskurser = ['4', '5', '6', '7', '8', '9']
+arskurser = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
 
-relevent_classes = ["4A", "4B", "4C", "4D", "5A", "5B", "5C", "5D", "6A", "6B", "6C", "6D", "7A", "7B", "7C", "8A", "8B", "8C", "9A", "9B", "9C"]
+relevent_classes = ["1A", "1B", "1C", "1D", "2A", "2B", "2C", "2D", "3A", "3B", "3C", "3D", "4A", "4B", "4C", "4D", "5A", "5B", "5C", "5D", "6A", "6B", "6C", "6D", "7A", "7B", "7C", "8A", "8B", "8C", "9A", "9B", "9C"]
 
 email_tail = '@edu.hellefors.se'
 
