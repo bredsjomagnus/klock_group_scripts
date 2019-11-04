@@ -56,6 +56,9 @@ else:
     cprint("    edulist_errors: %s " % (edulist_errors), 'yellow')
     print()
 
+print()
+print("Checking mail.")
+print()
 check_mail(service, df_elevlista, df_edukonto, ELEVLISTA_ID)
 print("Update elevlista:elevlista, email set.")
 

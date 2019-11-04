@@ -248,6 +248,8 @@ def check_mail(service, df_elevlista, df_edukonto, ELEVLISTA_ID):
     edukonto_personnummer_list = df_edukonto.loc[:, "Personnummer"].tolist()
     edukonto_edukonto_list = df_edukonto.loc[:, "Email"].tolist()
 
+    missing_mail_klass = [] # for error handling. Will build df and then save missing mails to csv
+    missing_mail_name = []
     content = []
     for i, current_pn in enumerate(elevlista_personnummer_list):
         row = []
@@ -261,10 +263,26 @@ def check_mail(service, df_elevlista, df_edukonto, ELEVLISTA_ID):
         if message != "OK":
             if current_klass in relevent_classes:
                 cprint("     %s %s SAKNAS I EDUKONTO SHEET" % (current_klass, current_name), 'yellow')
+                missing_mail_klass.append(current_klass)
+                missing_mail_name.append(current_name)
 
         row = [current_klass, current_name, current_groups, current_pn, email]   
         
         content.append(row)
+    
+    if len(missing_mail_klass) > 0:
+        missing_mail_dict = {
+            'Klass': missing_mail_klass,
+            'Namn': missing_mail_name
+        }
+        missing_mail_df = pd.DataFrame.from_dict(missing_mail_dict)
+        time_stamp = str(datetime.datetime.now())[:10] # 2019-09-04
+        filename = time_stamp + '_edukonto_som_saknas.csv'
+        missing_mail_df.to_csv(filename, sep=";", index=False)
+        print()
+        print("     Saved info about missing edu accounts to file ", end="")
+        cprint("'%s'" % (filename), 'cyan')
+
     print()
     sheet_range = "elevlista!A2"
     try:
