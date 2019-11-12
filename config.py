@@ -7,6 +7,7 @@ relevent_classes = ["1A", "1B", "1C", "1D", "2A", "2B", "2C", "2D", "3A", "3B", 
 email_tail = '@edu.hellefors.se'
 
 grupper = {
+    'klass': ['A-ELEVER', 'B-ELEVER', 'C-ELEVER'],
     'no': ['ABCNO-1', 'ABCNO-2', 'ABCNO-3', 'ABCNO-4'],
     'musik': ['AMU-1', 'BMU-1', 'CMU-1', 'AMU-2', 'BMU-2', 'CMU-2'],
     'sv': ['ASV', 'BSV', 'CSV'],

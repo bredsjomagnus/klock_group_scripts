@@ -349,8 +349,8 @@ def generate_groups(elevlista):
     counter = 0     # Counter for number of group.csv files created
     for year in arskurser:          # year: 7,...
         folder = 'year_'+year+'_files/'         # the folder to save the .csv in
-        excel_folder = 'grupper_åk_'+year+'/'   # the folder to save the .xlsx (drive files) in
-        no_prefix_folder = 'no_prefix/'
+        excel_folder = 'grupper_åk_'+year+'/'   # the folder to save the .xlsx (for human readability and upload to drive) in
+        no_prefix_folder = 'no_prefix/'         # 'Modersmål Dari', 'ModersmålSOM', 'Lilla Världen' etc
         print()
         print("folder: " + folder)
         for key in grupper:                 # key: no,...
@@ -368,7 +368,12 @@ def generate_groups(elevlista):
                 no_prefix_file_name = os.path.join(dirname, no_prefix_folder + group_name+".xlsx")  #/no_prefix/modersmål som F-3.xlsx
 
                 
-                group_df = elevlista[elevlista['Elev Grupper'].str.contains(group_name)]                # Ny dataframe med alla elever som är med i gruppen (groupname)
+                if key is not 'klass': # if group should be a group in 'Elev Grupper'
+                    group_df = elevlista[elevlista['Elev Grupper'].str.contains(group_name)]            # Ny dataframe med alla elever som är med i gruppen (groupname)
+                else:                   # if the group should be the class
+                    group_df = elevlista[elevlista['Elev Klass'].str.contains(group_name[:2])]          # Ny dataframe med alla elever som är med i klassen
+
+
                 # merged_df = pd.merge(elevmail, group_name_df, on=['Elev Namn'], how='inner')          # lägger samman dataframsen med avseende på elevnamnet
 
                 group_size = len(group_df.index)       # number of rows in merged dataframe
@@ -398,6 +403,7 @@ def generate_groups(elevlista):
 
                 excel_df = pd.DataFrame.from_dict(excel_dict)             # dataframe from created dict: drive_dict
 
+                
 
                 if len(new_df.index) > 0:   # if new_df contains rows   
                 
