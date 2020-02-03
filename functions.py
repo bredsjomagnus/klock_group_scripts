@@ -278,10 +278,16 @@ def check_mail(service, df_elevlista, df_edukonto, ELEVLISTA_ID):
         missing_mail_df = pd.DataFrame.from_dict(missing_mail_dict)
         time_stamp = str(datetime.datetime.now())[:10] # 2019-09-04
         filename = time_stamp + '_edukonto_som_saknas.csv'
-        missing_mail_df.to_csv(filename, sep=";", index=False)
-        print()
-        print("     Saved info about missing edu accounts to file ", end="")
-        cprint("'%s'" % (filename), 'cyan')
+        try:
+            missing_mail_df.to_csv(filename, sep=";", index=False)
+            print()
+            print("     Saved info about missing edu accounts to file ", end="")
+            cprint("'%s'" % (filename), 'cyan')
+        except PermissionError:
+            print(
+                f"     SAVING FILE '{filename}' PERMISSION ERROR: Is file already open?")
+        except:
+            print("     Something went wrong!")
 
     print()
     sheet_range = "elevlista!A2"
