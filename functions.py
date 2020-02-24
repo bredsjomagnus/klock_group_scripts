@@ -6,6 +6,7 @@ import os
 import sys
 import getopt
 import pickle
+from tqdm import tqdm
 import os.path
 from env import *
 from termcolor import colored, cprint
@@ -19,7 +20,7 @@ def error_report(error_list):
     print()
     cprint("     *ROWS MISSING IN ELEVLISTA:ELEVLISTA*", 'yellow', attrs=['bold'])
     cprint("        Missing %d at:" % (len(error_list)), 'yellow')
-    for row_number in error_list:
+    for row_number in tqmd(error_list, ascii=True, desc="Error report"):
         cprint("        - row %d" % (row_number), 'yellow')
 
 def authenticate():
@@ -87,7 +88,7 @@ def get_elevlista_with_emails(service, ELEVLISTA_ID):
         names = []
         groups = []
         emails = []
-        for i, row in enumerate(values):
+        for i, row in enumerate(tqdm(values, ascii=True, desc="Get Elevlista with emails")):
             if i > 0:
                 try: # this will take care of eventually empty cells.
                     klass = row[0]
@@ -136,7 +137,7 @@ def get_elevlista_without_mail(service, ELEVLISTA_ID):
         names = []
         groups = []
 
-        for i, row in enumerate(values):
+        for i, row in enumerate(tqdm(values, ascii=True, desc="Get Elevlista without email")):
             if i > 0:
                 # Print columns A and E, which correspond to indices 0 and 4.
                 try: # this will take care of eventually empty cells.
@@ -190,7 +191,7 @@ def get_edukonto_reference_list(service, ELEVLISTA_ID):
         personnummers = []
         names = []
         emails = []
-        for i, row in enumerate(values):
+        for i, row in enumerate(tqdm(values, ascii=True, desc="Get Edukonto ref. list")):
             # print(".", end="")
 
             if i > 0:
@@ -251,7 +252,7 @@ def check_mail(service, df_elevlista, df_edukonto, ELEVLISTA_ID):
     missing_mail_klass = [] # for error handling. Will build df and then save missing mails to csv
     missing_mail_name = []
     content = []
-    for i, current_pn in enumerate(elevlista_personnummer_list):
+    for i, current_pn in enumerate(tqdm(elevlista_personnummer_list, desc="Checking email")):
         row = []
         current_name = elevlista_namn_list[i]
         current_klass = elevlista_klass_list[i]
@@ -262,7 +263,7 @@ def check_mail(service, df_elevlista, df_edukonto, ELEVLISTA_ID):
             pass
         if message != "OK":
             if current_klass in relevent_classes:
-                cprint("     %s %s SAKNAS I EDUKONTO SHEET" % (current_klass, current_name), 'yellow')
+                cprint("     - %s %s SAKNAS I EDUKONTO SHEET" % (current_klass, current_name), 'yellow')
                 missing_mail_klass.append(current_klass)
                 missing_mail_name.append(current_name)
 
@@ -280,9 +281,8 @@ def check_mail(service, df_elevlista, df_edukonto, ELEVLISTA_ID):
         filename = time_stamp + '_edukonto_som_saknas.csv'
         try:
             missing_mail_df.to_csv(filename, sep=";", index=False)
-            print()
-            print("     Saved info about missing edu accounts to file ", end="")
-            cprint("'%s'" % (filename), 'cyan')
+            print("     [Saved info about missing edu accounts to file ", end="")
+            cprint("'%s']" % (filename), 'cyan')
         except PermissionError:
             print(
                 f"     SAVING FILE '{filename}' PERMISSION ERROR: Is file already open?")
@@ -353,7 +353,7 @@ def generate_groups(elevlista):
     empty_groups = []
     dirname = os.path.dirname(__file__) 
     counter = 0     # Counter for number of group.csv files created
-    for year in arskurser:          # year: 7,...
+    for year in tqdm(arskurser, ascii=True, desc="Generate groups"):          # year: 7,...
         folder = 'year_'+year+'_files/'         # the folder to save the .csv in
         excel_folder = 'grupper_åk_'+year+'/'   # the folder to save the .xlsx (for human readability and upload to drive) in
         no_prefix_folder = 'no_prefix/'         # 'Modersmål Dari', 'ModersmålSOM', 'Lilla Världen' etc

@@ -28,44 +28,46 @@ for opt in opts:
             if optvalue == '-h' or optvalue == '--help':
                 print(HELPMSG)
                 exit()
-print("Beginning process...")
+# print("Beginning process...")
+print()
+print("### 1/2 CHECKING EDU-MAIL ###")
 print()
 
 service = authenticate()
 
 
 df_elevlista, elevlist_errors = get_elevlista_without_mail(service, ELEVLISTA_ID)
-print("Reading 'elavlista:elevlista.")
-print("Clearing 'Elev Mail' column.")
+# print("Reading 'elavlista:elevlista.")
+# print("Clearing 'Elev Mail' column.")
 if len(elevlist_errors) > 0:
     error_report(elevlist_errors)
 else:
-    print()
+    print("Get Infometor (elevlista) file in Drive and return it as a Dataframe: ", end="")
     cprint("*** SUCCESS ***", 'green')
 
-print()
 
 df_edukonto, edulist_errors = get_edukonto_reference_list(service, ELEVLISTA_ID)
-print("Reading 'elevlista:edukonto.")
+# print("Reading 'elevlista:edukonto.")
 if len(edulist_errors['row']) == 0:
-    print()
+    print("Get edukonto sheet file in Drive and return it as a Dataframe: ", end="")
     cprint("*** SUCCESS ***", 'green')
+    print()
 else:
     cprint("--- len(edulist_errors['row']) != 0 ---", 'red')
     cprint("    TOTALLY %d ROWS IN ERROR LIST" % (len(edulist_errors['row'])), "yellow")
     cprint("    edulist_errors: %s " % (edulist_errors), 'yellow')
     print()
 
-print()
-print("Checking mail.")
-print()
+# print()
+# print("Checking mail.")
+# print()
 check_mail(service, df_elevlista, df_edukonto, ELEVLISTA_ID)
-print("Update elevlista:elevlista, email set.")
+# print("Update elevlista:elevlista, email set.")
 
-print()
-print("### MAIL CLEARED AND CHECKED ###")
-print()
-cont = input("Vill du fortsätta j/n? ")
+# print()
+print("### 1/2 DONE ###")
+# print()
+cont = input("2/2 CONTINUE WITH GROUPS j/n? ")
 if cont == "j":
     df_elevlista = get_elevlista_with_emails(service, ELEVLISTA_ID)
     empty_groups, files_created = generate_groups(df_elevlista)
@@ -73,7 +75,7 @@ if cont == "j":
     print()
     print("Empty group(s):", empty_groups, ". Skipped!")
     print()
-    print("DONE! %d files created!" % (files_created))
+    print("### 2/2 DONE! %d files created! ###" % (files_created))
 else:
     print()
     print()
