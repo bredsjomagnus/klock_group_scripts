@@ -221,7 +221,7 @@ def get_edukonto_reference_list(service, ELEVLISTA_ID):
     return df_edukonto, error_list
 
 def find_email(pn, name, df_edukonto):
-    
+
     email = ""
     message = "OK"
     try:
@@ -236,7 +236,7 @@ def find_email(pn, name, df_edukonto):
                 message = "KONTOT SAKNAS I EDUKONTO SHEET"
     except Exception as e:
         print("Error while looking for email in edukonto sheet ", e)
-            
+
     return email, message
 
 def check_mail(service, df_elevlista, df_edukonto, ELEVLISTA_ID):
@@ -267,10 +267,10 @@ def check_mail(service, df_elevlista, df_edukonto, ELEVLISTA_ID):
                 missing_mail_klass.append(current_klass)
                 missing_mail_name.append(current_name)
 
-        row = [current_klass, current_name, current_groups, current_pn, email]   
-        
+        row = [current_klass, current_name, current_groups, current_pn, email]
+
         content.append(row)
-    
+
     if len(missing_mail_klass) > 0:
         missing_mail_dict = {
             'Klass': missing_mail_klass,
@@ -300,15 +300,15 @@ def check_mail(service, df_elevlista, df_edukonto, ELEVLISTA_ID):
         # use append to add rows and update to overwrite
         response = service.spreadsheets().values().update(spreadsheetId=ELEVLISTA_ID, range=range, body=resource, valueInputOption="USER_ENTERED").execute()
     except Exception as e:
-        print("While trying to append values error: ", e)  
+        print("While trying to append values error: ", e)
 
 def createfile(new_df, group_file_name, group_name, message):
     """
     Saves the new dataframe to csv-file in corresponding folder
     ex year_7_files/7ABCNO-1.csv
     """
-    print()
-    print(message)
+    # print()
+    # print(message)
     new_df.to_csv(group_file_name, sep=",", index=False)    # dataframe to csv
 
 def create_excel_file(new_df, group_file_name, group_name, message):
@@ -328,15 +328,15 @@ def log_difference(new_df, old_df, group_name):
     # REMOVED
     removed_df = old_df.merge(new_df,indicator = True, how='left').loc[lambda x : x['_merge']!='both']
     if len(removed_df.index) > 0:
-        log += "Removed:\n" + removed_df.to_string() + "\n\n"
+        log += "Removed in "+ group_name +":\n" + removed_df.to_string() + "\n\n"
         logged = True
 
     # ADDED
     added_df = new_df.merge(old_df,indicator = True, how='left').loc[lambda x : x['_merge']!='both']
     if len(added_df.index) > 0:
-        log += "Added:\n" + added_df.to_string()
+        log += "Added in "+ group_name +":\n" + added_df.to_string()
         logged = True
-    
+
     if not logged:
         log += "NOTHING ADDED OR REMOVED BUT SOMETHING CHANGED:\n\nOld_df:\n" + old_df.to_string()
         log += "\n\nNew_df:\n" + new_df.to_string()
@@ -350,37 +350,58 @@ def log_difference(new_df, old_df, group_name):
     return group_name+".csv changed! LOG FILE CREATED -> '" + filepath + "'"
 
 def generate_groups(elevlista):
+    messages = []
     empty_groups = []
-    dirname = os.path.dirname(__file__) 
+    dirname = os.path.dirname(__file__)
     counter = 0     # Counter for number of group.csv files created
-    for year in tqdm(arskurser, ascii=True, desc="Generate groups"):          # year: 7,...
-        folder = 'year_'+year+'_files/'         # the folder to save the .csv in
-        excel_folder = 'grupper_åk_'+year+'/'   # the folder to save the .xlsx (for human readability and upload to drive) in
+    # for year in tqdm(arskurser, ascii=True, desc="Generate groups"):          # year: 7,...
+    for year in arskurser:          # year: 7,...
+        year_folder = 'year_'+year+'_files/'         # the folder to save the .csv in
+        year_excel_folder = 'grupper_åk_'+year+'/'   # the folder to save the .xlsx (for human readability and upload to drive) in
         no_prefix_folder = 'no_prefix/'         # 'Modersmål Dari', 'ModersmålSOM', 'Lilla Världen' etc
-        print()
-        print("folder: " + folder)
-        for key in grupper:                 # key: no,...
-            for group in grupper[key]:            # group: abcno-1, abcno-2, abcno-3,...
-                if key is not 'no_prefix':
+        kulturskolan_folder = 'kulturskolan/'   # 'Valhalla', 'Dans',...
+        kulturskolan_excel_folder = 'grupper_kulturskolan/'     # the folder to save the .xlsx for kulturskolans groups
+
+        for key in tqdm(grupper, ascii=True, desc="YEAR "+year):                 # key: no,...
+            """
+            grupper (dict) in config.py
+            """
+            for group in tqdm(grupper[key], ascii=True, desc="Doing "+key, leave=False):            # group: abcno-1, abcno-2, abcno-3,...
+                """
+                grupper[key] (list) in config.py
+                1. set group_name, group_file_name, excel_file_name depending on key in 'grupper'
+                """
+                group_name = 'not_set_yet'
+                group_file_name = 'not_set_yet'
+                excel_file_name = 'not_set_yet'
+                # get group_name depending on key in 'grupper' (dict) in config.py
+                if key is not 'no_prefix' and key is not 'kulturskolan':
+                    # print()
+                    # print("folder: " + year_folder)
                     group_name = year + group                       # the correct group name 7abcno-1, 7abcno-2,...
-                else:
+                    group_file_name = os.path.join(dirname, year_folder + group_name+".csv")         #/year_7_files/7abcno-1.csv
+                    excel_file_name = os.path.join(dirname, year_excel_folder + group_name+".xlsx")  #/grupper_åk_7/7abcno-1.xlsx
+                elif key == 'kulturskolan':
+                    # print()
+                    # print("folder: " + kulturskolan_folder)
                     group_name = group
+                    group_file_name = os.path.join(dirname, kulturskolan_folder + group_name+".csv")    #/kulturskolan/VALHALLA.csv
+                    excel_file_name = os.path.join(dirname, kulturskolan_excel_folder + group_name+".xlsx")     #/kulturskolan/VALHALLA.xlsx
+                else:
+                    # print()
+                    # print("folder: " + no_prefix_folder)
+                    group_name = group
+                    no_prefix_file_name = os.path.join(dirname, no_prefix_folder + group_name+".xlsx")  #/no_prefix/modersmål som F-3.xlsx
 
                 group_email = group_name.lower() + email_tail    # the groups email address 7abcno-1@edu.he.....
 
 
-                group_file_name = os.path.join(dirname, folder + group_name+".csv")         #/year_7_files/7abcno-1.csv
-                excel_file_name = os.path.join(dirname, excel_folder + group_name+".xlsx")  #/grupper_åk_7/7abcno-1.xlsx
-                no_prefix_file_name = os.path.join(dirname, no_prefix_folder + group_name+".xlsx")  #/no_prefix/modersmål som F-3.xlsx
 
-                
+                # Get group_df from 'Elev Grupper' or from 'Elev Klass'
                 if key is not 'klass': # if group should be a group in 'Elev Grupper'
                     group_df = elevlista[elevlista['Elev Grupper'].str.contains(group_name)]            # Ny dataframe med alla elever som är med i gruppen (groupname)
                 else:                   # if the group should be the class
                     group_df = elevlista[elevlista['Elev Klass'].str.contains(group_name[:2])]          # Ny dataframe med alla elever som är med i klassen
-
-
-                # merged_df = pd.merge(elevmail, group_name_df, on=['Elev Namn'], how='inner')          # lägger samman dataframsen med avseende på elevnamnet
 
                 group_size = len(group_df.index)       # number of rows in merged dataframe
 
@@ -409,18 +430,21 @@ def generate_groups(elevlista):
 
                 excel_df = pd.DataFrame.from_dict(excel_dict)             # dataframe from created dict: drive_dict
 
-                
 
-                if len(new_df.index) > 0:   # if new_df contains rows   
-                
+
+                if len(new_df.index) > 0:   # if new_df contains rows
+
                     if os.path.exists(group_file_name): # check if this csv already exists
                         old_df = pd.read_csv(group_file_name)   # get old_df
 
-                        
-                        if not new_df.equals(old_df):   # compare if new_df is equal to new
+
+                        if not new_df.equals(old_df):   # compare if new_df is not equal to old_df
                             message = log_difference(new_df, old_df, group_name)
+                            messages.append(message)
                             if key is not 'no_prefix':
-                                message = log_difference(new_df, old_df, group_name)
+                                # message = log_difference(new_df, old_df, group_name)
+                                # messages.append(message)
+
                                 createfile(new_df, group_file_name, group_name, message)
 
                                 # creating xlsx-files in 'grupper_åk_x/group_name'
@@ -429,28 +453,36 @@ def generate_groups(elevlista):
                                 counter += 1
                             else:
                                 create_excel_file(excel_df, no_prefix_file_name, group_name, excel_message)
-                            
+
                         else:
-                            print(".", end="")
+                            # print(".", end="")
+                            pass
 
                     else:
                         if key is not 'no_prefix':
                             # creating csv-files in 'year_x_files/group_name'
                             message = group_name+".csv created!"
                             createfile(new_df, group_file_name, group_name, message)
+                            messages.append(message)
 
                             # creating xlsx-files in 'grupper_åk_x/group_name'
-                            excel_message = group_name+".xlsx created for drive!"   
+                            excel_message = group_name+".xlsx created for drive!"
                             create_excel_file(excel_df, excel_file_name, group_name, excel_message)
                             counter += 1
                         else:
-                            excel_message = group_name+".xlsx created for drive!" 
+                            excel_message = group_name+".xlsx created for drive!"
                             create_excel_file(excel_df, no_prefix_file_name, group_name, excel_message)
-                        
 
-                        
+
+
 
                 else:
                     empty_groups.append(group_name)
     
+    if len(messages) > 0:
+        print()
+        print("FOLLOWING CHANGES FOUND:")
+        for msg in messages:
+            print(f'    - {msg}')
+
     return empty_groups, counter

@@ -71,9 +71,9 @@ cont = input("2/2 CONTINUE WITH GROUPS j/n? ")
 if cont == "j":
     df_elevlista = get_elevlista_with_emails(service, ELEVLISTA_ID)
     empty_groups, files_created = generate_groups(df_elevlista)
-    print()
-    print()
-    print("Empty group(s):", empty_groups, ". Skipped!")
+    # print()
+    # print()
+    # print("Empty group(s):", empty_groups, ". Skipped!")
     print()
     print("### 2/2 DONE! %d files created! ###" % (files_created))
 else:
