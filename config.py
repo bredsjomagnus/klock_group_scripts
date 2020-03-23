@@ -11,7 +11,7 @@ grupper = {
     'no': ['ABCNO-1', 'ABCNO-2', 'ABCNO-3', 'ABCNO-4'],
     'musik': ['AMU-1', 'BMU-1', 'CMU-1', 'AMU-2', 'BMU-2', 'CMU-2'],
     'sv': ['ASV', 'BSV', 'CSV'],
-    'sva': ['ABCSVA'],
+    'sva': ['ABCSVA', 'ABCSVA-Gerd'],
     'no_prefix': ['ModersmålARA', 'Modersmål Som F-3', 'SOM 6-9', 'ModersmålNLD', 'Modersmål Dari', 'ModersmålSOM', 'Lilla Världen'],
     'sven': ['ABCSVEN'],
     'bild': ['ABL-1', 'BBL-1', 'CBL-1', 'ABL-2', 'BBL-2', 'CBL-2'],
