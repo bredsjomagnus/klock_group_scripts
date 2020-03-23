@@ -20,5 +20,5 @@ grupper = {
     'hemkunskap': ['AHKK-1', 'AHKK-2', 'BHKK-1', 'BHKK-2', 'CHKK-1', 'CHKK-2'],
     'so': ['ASO', 'BSO', 'CSO'],
     'idrott': ['AIDH', 'BIDH', 'CIDH'],
-    'kulturskolan': ['Bild äldre kulturskolan', 'Dans åk 7 kulturskolan', 'Valhalla HT17', 'Dans åk 7-8 kulturskolan', 'Fiol Maria kulturskolan']
+    'kulturskolan': []
 }
