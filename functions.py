@@ -478,11 +478,13 @@ def generate_groups(elevlista):
 
                 else:
                     empty_groups.append(group_name)
-    
+    print()
     if len(messages) > 0:
-        print()
         print("FOLLOWING CHANGES FOUND:")
         for msg in messages:
             print(f'    - {msg}')
+    else:
+        print("NO CHANGES FOUND!")
+
 
     return empty_groups, counter
