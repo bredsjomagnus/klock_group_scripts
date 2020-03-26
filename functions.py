@@ -520,7 +520,7 @@ def log_difference(new_df, old_df, group_name):
     # REMOVED
     removed_df = old_df.merge(new_df,indicator = True, how='left').loc[lambda x : x['_merge']!='both']
     if len(removed_df.index) > 0:
-        log += "Removed in "+ group_name +":\n" + removed_df.to_string() + "\n\n"
+        log += "Removed from "+ group_name +":\n" + removed_df.to_string() + "\n\n"
         logged = True
 
     # ADDED
@@ -541,6 +541,28 @@ def log_difference(new_df, old_df, group_name):
 
     return group_name+".csv changed! LOG FILE CREATED -> '" + filepath + "'"
 
+def df_sub_group_from_list_in_column(df, column, needle):
+    boolean_mask = []
+    for index, value in df.iterrows():
+
+        # Ser till att kolumnen innehåller en lista
+        if not type(value[column]) is list:
+            column_list = value[column].split(',')
+        else:
+            column_list = value[column]
+        
+        clean_list = []
+        # Ser till att ta bort mellanslag i båda ändar av strängen
+        for e in column_list:
+            clean_list.append(e.strip())
+
+        if needle in clean_list:
+            boolean_mask.append(True)
+        else:
+            boolean_mask.append(False)
+        
+    return boolean_mask
+
 def generate_groups(elevlista):
     messages = []
     empty_groups = []
@@ -558,7 +580,7 @@ def generate_groups(elevlista):
             """
             grupper (dict) in config.py
             """
-            for group in tqdm(grupper[key], ascii=True, desc="Doing "+key, leave=False):            # group: abcno-1, abcno-2, abcno-3,...
+            for group in tqdm(grupper[key], ascii=True, desc="Key: "+key, leave=False):            # group: abcno-1, abcno-2, abcno-3,...
                 """
                 grupper[key] (list) in config.py
                 1. set group_name, group_file_name, excel_file_name depending on key in 'grupper'
@@ -591,7 +613,10 @@ def generate_groups(elevlista):
 
                 # Get group_df from 'Elev Grupper' or from 'Elev Klass'
                 if key is not 'klass': # if group should be a group in 'Elev Grupper'
-                    group_df = elevlista[elevlista['Elev Grupper'].str.contains(group_name)]            # Ny dataframe med alla elever som är med i gruppen (groupname)
+                    # group_df = elevlista[elevlista['Elev Grupper'].str.contains(group_name)]            # Ny dataframe med alla elever som är med i gruppen (groupname)
+                    group_df = elevlista[df_sub_group_from_list_in_column(elevlista, 'Elev Grupper', group_name)]
+
+                    
                 else:                   # if the group should be the class
                     group_df = elevlista[elevlista['Elev Klass'].str.contains(group_name[:2])]          # Ny dataframe med alla elever som är med i klassen
 
