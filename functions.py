@@ -166,6 +166,186 @@ def get_elevlista_without_mail(service, ELEVLISTA_ID):
 
     return df_elevlista, error_list
 
+def get_elevlista_with_personummer_as_index(service, ELEVLISTA_ID):
+    """
+    Hämta hem elevlistan i förberedelse att användas mot extenslistan för
+    att bygga gruppimporttabellen.
+
+    Skillnaden här är att funktionen inte utför clear och att personnummer sätts som index.
+    """
+    RANGE = 'elevlista!A1:D'
+
+     # Call the Sheets API
+    sheet = service.spreadsheets()
+    result = sheet.values().get(spreadsheetId=ELEVLISTA_ID,
+                                range=RANGE).execute()
+    values = result.get('values', [])
+
+    if not values:
+        print('No data found in elevlista.')
+    else:
+        error_list = []
+
+        klasser = []
+        personnummers = []
+        names = []
+        groups = []
+
+        for i, row in enumerate(tqdm(values, ascii=True, desc="Get elevlista prepped for matching against Extenslista for group import")):
+            if i > 0:
+                # Print columns A and E, which correspond to indices 0 and 4.
+                try: # this will take care of eventually empty cells.
+                    klass = row[0]
+                    personnummer = str(row[3])
+                    name = row[1]
+                    group = row[2]
+
+                    klasser.append(klass)
+                    personnummers.append(personnummer)
+                    names.append(name)
+                    groups.append(group)
+                    # emails.append(email)
+                except Exception as e:
+                    error_list.append(i+1)
+
+        _dict = {
+            'Klass': klasser,
+            'Namn': names,
+            "Grupper": groups,
+            'Personnummer': personnummers,
+        }
+        df = pd.DataFrame.from_dict(_dict)
+        df.set_index('Personnummer', inplace=True)
+    return df, error_list
+
+def get_groupimport(service, EXTENS_ID):
+    """
+    Hämtar personnumer och namn från Extenslistan. Här sätts personnumret som index.
+    """
+    RANGE = 'extens!A1:E'
+
+     # Call the Sheets API
+    sheet = service.spreadsheets()
+    result = sheet.values().get(spreadsheetId=EXTENS_ID,
+                                range=RANGE).execute()
+    values = result.get('values', [])
+
+    if not values:
+        print('No data found in elevlista.')
+    else:
+        error_list = []
+
+        personnummers = []
+        names = []
+
+        for i, row in enumerate(tqdm(values, ascii=True, desc="Get personid and name from Extenslist")):
+            if i > 0:
+                # Print columns A and E, which correspond to indices 0 and 4.
+                try: # this will take care of eventually empty cells.
+                    personnummer = str(row[1])
+                    lastname = str(row[2])
+                    firstname = str(row[3])
+                    personnummers.append(personnummer)
+                    names.append(lastname+", "+firstname)
+                    
+                except Exception as e:
+                    error_list.append(str(row[1]))
+
+        _dict = {
+            'Personid': personnummers,
+            'Namn': names
+        }
+        df = pd.DataFrame.from_dict(_dict)
+        df.set_index('Personid', inplace=True)
+
+    return df, error_list
+
+def get_group_import_content(df_group, df_elev):
+    """
+    Ser till att samla upp det som skall in i gruppimporttabellen och returnera det.
+
+    Listan från Extens och Elevlistan jämförs här. Vid en direkt match av personnummerna
+    läggs grupperna till från elevlistan.
+
+    Matchar det inte kollas om de sex första siffrona matchar samtidigt som namnet stämmer. Även 
+    då förs grupperna in men med en notering vem det gäller.
+
+    Blir det ingen match alls skriv detta ut i raderna som MISSING MATCH och användaren meddelas
+    i terminalen.
+    """
+    content = []
+    _errors = []
+    for index_grp, row_grp in tqdm(df_group.iterrows(), ascii=True, desc="Get Group Import Table Content"):
+        
+        # Tar bort bindestrecket från personid i df_group
+        index_grp = index_grp.replace('-', '')
+        if index_grp in df_elev.index:
+            """
+            Om personid finns i elevlistan
+            """
+            row = [index_grp, df_elev.loc[index_grp].Grupper, '']
+
+        else:
+            """
+            För de personnumer som saknas kan det oftast vara så att det är de fyra
+            sista som inte stämmer. Letar därför igenom elevlistan och se om det finns
+            match både för de 6 första siffrorna i personnumret och för namnet.
+            Avlägger sedan en rapport för detta till användaren så att man kan dubbelkolla
+            att det blev rätt.
+            """
+            
+            # De första sex siffrorna i personnummret i extens
+            # som skall jämföras med de första sex siffrorna i
+            # elevlistan nu när det inte matchade med alla tio 
+            # siffrorna.
+            pn_first_part_grp = index_grp[0:6]
+            
+            # En bool för att kunna fånga upp om en match helt saknas efter
+            # att ha kollat första sex siffrorna och namnet.
+            missing_match = True
+            for index_elv, row_elv in tqdm(df_elev.iterrows(), ascii=True, leave=True, desc="Trying to find secondary match"):
+                # Tar bort bindestrecket från personid i df_elev.
+                # Skall inte finnas men gör det fall i fall.
+                index_elv = index_elv.replace('-', '')
+                
+                # De första sex siffrorna i elevlistan.
+                pn_first_part_elv = index_elv[0:6]
+                
+                # kolla om det finns en rad där första sex siffrorna i extens och 
+                # elevlistan stämmer överräns samtidigt som namnet är detsamma
+                if pn_first_part_grp == pn_first_part_elv and row_grp.Namn == row_elv.Namn and missing_match:
+                    row = [index_grp, df_elev.loc[index_elv].Grupper, df_elev.loc[index_elv].Namn +": "+index_elv+" ->  "+ row_grp.Namn +": "+index_grp] # lägg till personid, grupperna, namnet samt pn i elevlista -> pn i extens
+                    missing_match = False
+                    
+            if missing_match:
+                row = [index_grp, 'MISSING MATCH', 'MISSING MATCH']
+                _errors.append(index_grp)
+        
+        content.append(row)
+        
+    
+    return content, _errors
+
+def clear_sheet(service, _range, ID):
+    """
+    Rensar sagd _range från sheet med id ID
+    """
+    service.spreadsheets().values().clear(spreadsheetId=ID, range=_range).execute()
+                
+def edit_sheet(service, content, _range, ID):
+    """
+    Uppdaterar sagd _range i sheet med id ID med innehållet content
+    """
+    try:
+        range = _range
+        values = content
+        resource = {
+            "values": values
+        }
+        # use append to add rows and update to overwrite
+        service.spreadsheets().values().update(spreadsheetId=ID, range=range, body=resource, valueInputOption="USER_ENTERED").execute()
+    except Exception as e:
+        print("While trying to append values error: ", e)
 
 def get_edukonto_reference_list(service, ELEVLISTA_ID):
     """

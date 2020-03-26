@@ -30,7 +30,7 @@ for opt in opts:
                 exit()
 # print("Beginning process...")
 print()
-print("### 1/2 CHECKING EDU-MAIL ###")
+print("### 1/3 CHECKING EDU-MAIL ###")
 print()
 
 service = authenticate()
@@ -65,9 +65,9 @@ check_mail(service, df_elevlista, df_edukonto, ELEVLISTA_ID)
 # print("Update elevlista:elevlista, email set.")
 
 # print()
-print("### 1/2 DONE ###")
+print("### 1/3 DONE ###")
 # print()
-cont = input("2/2 CONTINUE WITH GROUPS j/n? ")
+cont = input("2/3 CONTINUE WITH GROUPS j/n? ")
 if cont == "j":
     df_elevlista = get_elevlista_with_emails(service, ELEVLISTA_ID)
     empty_groups, files_created = generate_groups(df_elevlista)
@@ -75,9 +75,36 @@ if cont == "j":
     # print()
     # print("Empty group(s):", empty_groups, ". Skipped!")
     print()
-    print("### 2/2 DONE! %d files created! ###" % (files_created))
+    print("### 2/3 DONE! %d files created! ###" % (files_created))
 else:
     print()
     print()
     print("Mail checked! Aborting.")
 
+cont = input("3/3 CONTINUE WITH GROUPS IMPORTS j/n? ")
+if cont == "j":
+    df_group, _errors_gruppimport = get_groupimport(service, EXTENS_ID)
+    if len(_errors_gruppimport) > 0:
+        print(f'_errors_gruppimport: {_errors_gruppimport}')
+        print('Shutting down')
+        exit()
+    df_elev, _errors_elevlista = get_elevlista_with_personummer_as_index(service, ELEVLISTA_ID)
+    if len(_errors_elevlista) > 0:
+        print(f'_errors_elevlista: {_errors_elevlista}')
+        print('Shutting down')
+        exit()
+
+    content, _errors = get_group_import_content(df_group, df_elev)
+
+    clear_sheet(service, 'gruppimport!A2:C', ELEVLISTA_ID)
+    edit_sheet(service, content, "gruppimport!A2", ELEVLISTA_ID)
+    
+    print()
+    print("service.spreadsheets().values().update elevlista->gruppimport: ", end="")
+    cprint("*** SUCCESS ***", 'green')
+
+    print()
+    if len(_errors) > 0:
+        print(f'Totally missing matches: {_errors}')
+    else:
+        print("NO MISSING MATCHES!")
