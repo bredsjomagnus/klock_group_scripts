@@ -260,6 +260,9 @@ def get_groupimport(service, EXTENS_ID):
 
     return df, error_list
 
+def set_leading_zero(value):
+    return '0' + value
+
 def get_group_import_content(df_group, df_elev):
     """
     Ser till att samla upp det som skall in i gruppimporttabellen och returnera det.
@@ -278,7 +281,12 @@ def get_group_import_content(df_group, df_elev):
     for index_grp, row_grp in tqdm(df_group.iterrows(), ascii=True, desc="Get Group Import Table Content"):
         
         # Tar bort bindestrecket från personid i df_group
-        index_grp = index_grp.replace('-', '')
+        index_grp = str(index_grp).replace('-', '')
+
+        if len(index_grp) < 10:
+            set_leading_zero(index_grp)
+            print(f'set_leading_zero({index_grp})')
+        
         if index_grp in df_elev.index:
             """
             Om personid finns i elevlistan
@@ -306,8 +314,12 @@ def get_group_import_content(df_group, df_elev):
             for index_elv, row_elv in tqdm(df_elev.iterrows(), ascii=True, leave=True, desc="Trying to find secondary match"):
                 # Tar bort bindestrecket från personid i df_elev.
                 # Skall inte finnas men gör det fall i fall.
-                index_elv = index_elv.replace('-', '')
+                index_elv = str(index_elv).replace('-', '')
                 
+                if len(index_elv) < 10:
+                    set_leading_zero(index_elv)
+                    print(f'set_leading_zero({index_elv})')
+
                 # De första sex siffrorna i elevlistan.
                 pn_first_part_elv = index_elv[0:6]
                 
