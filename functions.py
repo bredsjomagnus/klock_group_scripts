@@ -311,7 +311,7 @@ def get_group_import_content(df_group, df_elev):
             # En bool för att kunna fånga upp om en match helt saknas efter
             # att ha kollat första sex siffrorna och namnet.
             missing_match = True
-            for index_elv, row_elv in tqdm(df_elev.iterrows(), ascii=True, leave=True, desc="Trying to find secondary match"):
+            for index_elv, row_elv in tqdm(df_elev.iterrows(), ascii=True, leave=True, desc="Retry: " + row_grp.Namn):
                 # Tar bort bindestrecket från personid i df_elev.
                 # Skall inte finnas men gör det fall i fall.
                 index_elv = str(index_elv).replace('-', '')
