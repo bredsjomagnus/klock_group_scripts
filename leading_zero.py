@@ -168,7 +168,7 @@ col_map = {
     'Elev Personnummer': 'Personnummer'
 }
 
-df, errors = get_sheet_as_df(service, ID, 'Export.xls!A1:D', col_map)
+df, errors = get_sheet_as_df(service, ID, sheet_name+'!A1:D', col_map)
 
 if len(errors) > 0:
     cprint("Errors found: ", 'yellow')
@@ -182,7 +182,7 @@ if len(errors) > 0:
 
 df = leading_zeroes(df, ['Personnummer'])
 
-update_column_via_df(service, ID, 'Export.xls!D2:D', 'Personnummer', df)
+update_column_via_df(service, ID, sheet_name+'!D2:D', 'Personnummer', df)
 
 print()
 print(f'service.spreadsheets().values().update -> ID: {ID} ', end="")
