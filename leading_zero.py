@@ -12,6 +12,26 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 
+ID = ""
+sheet_name = "Export.xls"
+
+
+options = ['-h', '--help', '--id', '--sheetname']
+
+# get options and arguments from console
+opts, args = getopt.getopt(sys.argv[1:], "h", ["help", 'id=', 'sheetname='])
+
+# iterate options
+for opt, arg in opts:
+    # check if option is in valid option list
+    if opt in options:
+        if opt == '--id':
+            ID = arg
+            print(arg)
+        if opt == '--sheetname':
+            sheet_name = arg
+
+
 def authenticate():
     creds = None
     # The file token.pickle stores the user's access and refresh tokens, and is
@@ -138,8 +158,10 @@ def update_column_via_df(service, ID, _range, column, df):
     update_sheet_service(service, ID, _range, content)
 
 
-ID = input('ID: ')
+# ID = input('ID: ')
+# print(ID)
 
+# input("")
 service = authenticate()
 
 col_map = {
