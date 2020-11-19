@@ -279,10 +279,20 @@ def get_group_import_content(df_group, df_elev):
     content = []
     _errors = []
     for index_grp, row_grp in tqdm(df_group.iterrows(), ascii=True, desc="Get Group Import Table Content"):
-        
+        """
+        index_grp är index dvs personnumret i extenslistan
+        """
+
         # Tar bort bindestrecket från personid i df_group
         index_grp = str(index_grp).replace('-', '')
+        
+        index_grp = index_grp.strip()
 
+        # print("###")
+        # print("")
+        # print(index_grp)
+        # print("")
+        # print("####")
         if len(index_grp) < 10:
             set_leading_zero(index_grp)
             print(f'set_leading_zero({index_grp})')

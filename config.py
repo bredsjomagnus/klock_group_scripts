@@ -8,7 +8,8 @@ email_tail = '@edu.hellefors.se'
 
 grupper = {
     'klass': ['A-ELEVER', 'B-ELEVER', 'C-ELEVER'],
-    'no': ['ABCNO-1', 'ABCNO-2', 'ABCNO-3', 'ABCNO-4'],
+    'no_1': ['ABCDNO-1', 'ABCDNO-2', 'ABCDNO-3', 'ABCDNO-4'],
+    'no_2': ['ABCNO-1', 'ABCNO-2', 'ABCNO-3', 'ABCNO-4'],
     'musik': ['AMU-1', 'BMU-1', 'CMU-1', 'AMU-2', 'BMU-2', 'CMU-2'],
     'sv': ['ASV', 'BSV', 'CSV'],
     'sva': ['ABCSVA', 'ABCSVA-Gerd'],
