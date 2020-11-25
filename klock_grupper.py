@@ -30,7 +30,7 @@ for opt in opts:
                 exit()
 # print("Beginning process...")
 print()
-print("### 1/3 CHECKING EDU-MAIL ###")
+print("### 1/4 CHECKING EDU-MAIL ###")
 print()
 
 service = authenticate()
@@ -63,11 +63,39 @@ else:
 # print()
 check_mail(service, df_elevlista, df_edukonto, ELEVLISTA_ID)
 # print("Update elevlista:elevlista, email set.")
+print("### 1/4 DONE ###")
+print()
+print("### 2/4 CHECKING LANGUAGE ###")
+print()
+
+# Get elevlista with emails as df
+sheet_name = 'elevlista'
+col_map = {
+    'Elev Klass': 'Klass',
+    'Elev Namn': 'Namn',
+    'Elev Grupper': 'Grupper',
+    'Elev Personnummer': 'Personnummer',
+    'Elev Mail': 'Mail',
+}
+
+df_elevlista_with_mails, errors = get_sheet_as_df(service, ELEVLISTA_ID, sheet_name+'!A1:E', col_map)
+
+# Get sva_sv as df
+sheet_name = 'sva_sv'
+col_map = {
+    'Elev': 'Namn',
+    'Personnummer': 'Personnummer',
+    'Språk': 'Språk'
+}
+df_sva_sv, errors = get_sheet_as_df(service, ELEVLISTA_ID, sheet_name+'!A1:E', col_map)
+
+check_language(service, df_elevlista_with_mails, df_sva_sv, ELEVLISTA_ID)
+
 
 # print()
-print("### 1/3 DONE ###")
+
 # print()
-cont = input("2/3 CONTINUE WITH GROUPS j/n? ")
+cont = input("3/4 CONTINUE WITH GROUPS j/n? ")
 if cont == "j":
     df_elevlista = get_elevlista_with_emails(service, ELEVLISTA_ID)
     empty_groups, files_created = generate_groups(df_elevlista)
@@ -75,13 +103,13 @@ if cont == "j":
     # print()
     # print("Empty group(s):", empty_groups, ". Skipped!")
     print()
-    print("### 2/3 DONE! %d files created! ###" % (files_created))
+    print("### 3/4 DONE! %d files created! ###" % (files_created))
 else:
     print()
     print()
     print("Mail checked! Aborting.")
 
-cont = input("3/3 CONTINUE WITH GROUPS IMPORTS j/n? ")
+cont = input("4/4 CONTINUE WITH GROUPS IMPORTS j/n? ")
 if cont == "j":
     df_group, _errors_gruppimport = get_groupimport(service, EXTENS_ID)
     if len(_errors_gruppimport) > 0:
